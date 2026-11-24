@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Partha Saradhi &amp; Suchitra – Wedding Invitation</title>
+  <meta name="description" content="You're warmly invited to the wedding of Partha Saradhi & Suchitra on 29th November 2026.">
+  <meta property="og:title" content="Partha Saradhi & Suchitra – Wedding Invitation">
+  <meta property="og:description" content="Join us for the Muhurtham on 29th November 2026 at TTD Kalyana Mandapam, Santhipuram.">
+  <meta property="og:type" content="website">
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <style>
+    :root {
+      --bg-primary: #fdf8f0; --bg-secondary: #f6ead6; --bg-card: #ffffff;
+      --text-primary: #2c1d11; --text-secondary: #6d543e;
+      --accent: #b8860b; --accent-light: #ebd07a; --accent-dark: #805b03;
+      --border-ornate: #d4af37; --hero-grad-1: #2b1810; --hero-grad-2: #52301e;
+    }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: var(--bg-primary); color: var(--text-primary); overflow-x: hidden; margin: 0; }
+    .font-serif-display { font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif; }
+
+    #curtainOverlay { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, var(--hero-grad-2) 0%, var(--hero-grad-1) 100%); transition: opacity .9s cubic-bezier(.4,0,.2,1), visibility .9s; }
+    #curtainOverlay.opened { opacity: 0; visibility: hidden; pointer-events: none; }
+    .curtain-door-left, .curtain-door-right { position: absolute; top: 0; bottom: 0; width: 50%; background: linear-gradient(135deg, var(--hero-grad-1), var(--hero-grad-2)); transition: transform 1.1s cubic-bezier(.77,0,.175,1); }
+    .curtain-door-left { left: 0; border-right: 2px solid var(--border-ornate); box-shadow: inset -20px 0 60px rgba(0,0,0,.45); }
+    .curtain-door-right { right: 0; border-left: 2px solid var(--border-ornate); box-shadow: inset 20px 0 60px rgba(0,0,0,.45); }
+    #curtainOverlay.opening .curtain-door-left { transform: translateX(-100%); }
+    #curtainOverlay.opening .curtain-door-right { transform: translateX(100%); }
+    #curtainOverlay.opening .seal-container { transform: scale(1.25); opacity: 0; }
+    .seal-container { position: relative; z-index: 10; padding: 2rem 1.75rem; border-radius: 1.5rem; background: radial-gradient(circle at center, rgba(20,10,6,.88) 0%, rgba(20,10,6,.55) 70%, transparent 100%); transition: transform .6s ease, opacity .6s ease; }
+    .wax-seal-btn { width: 132px; height: 132px; border-radius: 9999px; background: radial-gradient(circle at 35% 30%, #f5d77f, #c9971c 55%, #7d5904 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; animation: pulseGlow 2.4s infinite ease-in-out; transition: transform .25s ease; border: 0; }
+    .wax-seal-btn:hover { transform: scale(1.07); }
+    @keyframes pulseGlow {
+      0%,100% { box-shadow: 0 0 0 6px rgba(212,175,55,.25), 0 0 30px rgba(212,175,55,.35), 0 18px 40px rgba(0,0,0,.6); }
+      50% { box-shadow: 0 0 0 14px rgba(212,175,55,.12), 0 0 55px rgba(235,208,122,.65), 0 18px 40px rgba(0,0,0,.6); }
+    }
+    @keyframes slowSpin { to { transform: rotate(360deg); } }
+    .mandala-spin { animation: slowSpin 60s linear infinite; }
+    @keyframes floatGentle { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    .float-gentle { animation: floatGentle 4.5s ease-in-out infinite; }
+    @keyframes shimmerText { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+    .gold-shimmer { background: linear-gradient(90deg, var(--accent-light) 0%, #fff6d6 35%, var(--border-ornate) 50%, #fff6d6 65%, var(--accent-light) 100%); background-size: 200% auto; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmerText 5s linear infinite; }
+    .reveal-section { opacity: 0; transform: translateY(28px); transition: opacity .8s cubic-bezier(.22,1,.36,1), transform .8s cubic-bezier(.22,1,.36,1); }
+    .reveal-section.visible { opacity: 1; transform: translateY(0); }
+    .ornate-card { background-color: var(--bg-card); border: 1px solid var(--border-ornate); box-shadow: 0 12px 35px -10px rgba(0,0,0,.12); }
+    .ornate-frame { border: 2px solid var(--border-ornate); position: relative; }
+    .ornate-frame::before { content: ''; position: absolute; inset: 6px; border: 1px solid var(--border-ornate); opacity: .45; pointer-events: none; }
+    #particleCanvas { position: fixed; inset: 0; pointer-events: none; z-index: 30; }
+    .toast-banner { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); z-index: 80; opacity: 0; transition: transform .35s ease, opacity .35s ease; }
+    .toast-banner.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    #musicToggleBtn { position: fixed; top: 14px; right: 14px; z-index: 50; }
+  </style>
+</head>
+<body>
+  <canvas id="particleCanvas"></canvas>
+
+  <!-- Curtain / wax seal entrance -->
+  <div id="curtainOverlay">
+    <div class="curtain-door-left"></div>
+    <div class="curtain-door-right"></div>
+    <div class="seal-container text-center px-6 max-w-md mx-auto">
+      <div class="mb-6 flex justify-center">
+        <svg class="w-16 h-16 text-amber-300 opacity-85 float-gentle" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="32" cy="32" r="28" stroke-dasharray="3 3"></circle>
+          <path d="M32 8 C36 20, 44 28, 56 32 C44 36, 36 44, 32 56 C28 44, 20 36, 8 32 C20 28, 28 20, 32 8 Z"></path>
+        </svg>
+      </div>
+      <p class="uppercase tracking-[0.32em] text-xs text-amber-200/90 mb-3">A Royal Wedding Invitation</p>
+      <h2 class="font-serif-display text-3xl sm:text-4xl text-amber-50 mb-2">Partha &amp; Suchitra</h2>
+      <p class="text-sm text-amber-100/80 mb-8">Together with Family &amp; Friends</p>
+      <button id="openSealBtn" type="button" class="wax-seal-btn mx-auto text-amber-950 focus:outline-none">
+        <span class="font-serif-display text-2xl font-bold tracking-wider">P &amp; S</span>
+        <span class="text-[10px] uppercase tracking-[0.2em] font-semibold mt-1">Tap to Open</span>
+      </button>
+      <p class="text-xs text-amber-200/70 mt-6">With celebratory music &amp; animations</p>
+    </div>
+  </div>
+
+  <button id="musicToggleBtn" type="button" class="p-2 rounded-lg text-stone-700 bg-white/80 hover:bg-white transition shadow" title="Toggle chime music" aria-label="Toggle chime music">
+    <i data-lucide="volume-x" id="musicIcon" class="w-4 h-4"></i>
+  </button>
+
+  <main class="relative z-10 pb-20">
+    <!-- Hero -->
+    <section class="relative min-h-[88vh] flex items-center justify-center px-4 py-16 text-center overflow-hidden" style="background: radial-gradient(circle at top, var(--hero-grad-2) 0%, var(--hero-grad-1) 100%);">
+      <svg class="mandala-spin absolute w-[520px] h-[520px] sm:w-[700px] sm:h-[700px] text-amber-300/10 pointer-events-none" viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="0.6">
+        <circle cx="100" cy="100" r="95" stroke-dasharray="4 4"></circle>
+        <circle cx="100" cy="100" r="78"></circle>
+        <circle cx="100" cy="100" r="60" stroke-dasharray="2 3"></circle>
+        <polygon points="100,8 125,75 192,100 125,125 100,192 75,125 8,100 75,75"></polygon>
+        <polygon points="100,22 118,82 178,100 118,118 100,178 82,118 22,100 82,82" transform="rotate(45 100 100)"></polygon>
+      </svg>
+      <div class="relative z-10 max-w-3xl w-full mx-auto p-8 sm:p-14 rounded-2xl ornate-frame bg-black/25 backdrop-blur-sm">
+        <p class="uppercase tracking-[0.28em] text-xs sm:text-sm text-amber-200/90 mb-5">Together with Family &amp; Friends</p>
+        <div class="w-20 h-20 mx-auto mb-6 rounded-full border-2 border-amber-300/70 flex items-center justify-center bg-amber-950/50 shadow-lg float-gentle">
+          <span class="font-serif-display text-2xl font-bold text-amber-200">P &amp; S</span>
+        </div>
+        <h1 class="font-serif-display text-4xl sm:text-6xl md:text-7xl font-bold gold-shimmer leading-tight mb-4">Partha Saradhi &amp; Suchitra</h1>
+        <p class="text-amber-100/90 text-sm sm:text-base tracking-widest uppercase mb-8">Request the honour of your presence at their wedding</p>
+        <div class="inline-flex flex-wrap items-center justify-center gap-4 sm:gap-8 px-6 py-4 rounded-xl border border-amber-300/40 bg-black/30 text-amber-100">
+          <div class="flex items-center gap-2"><i data-lucide="calendar-heart" class="w-5 h-5 text-amber-300"></i><span class="font-serif-display text-base sm:text-lg font-semibold">Sunday, November 29, 2026</span></div>
+          <span class="hidden sm:inline text-amber-400/50">|</span>
+          <div class="flex items-center gap-2"><i data-lucide="clock" class="w-5 h-5 text-amber-300"></i><span class="font-serif-display text-base sm:text-lg font-semibold">4:30 AM</span></div>
+          <span class="hidden sm:inline text-amber-400/50">|</span>
+          <div class="flex items-center gap-2"><i data-lucide="map-pin" class="w-5 h-5 text-amber-300"></i><span class="font-serif-display text-base sm:text-lg font-semibold">Santhipuram, Kuppam Main Road, Andhra Pradesh</span></div>
+        </div>
+        <p class="mt-6 text-xs tracking-[0.25em] uppercase text-amber-300/80">#ParthaWedsSuchi</p>
+      </div>
+    </section>
+
+    <!-- Countdown -->
+    <section class="max-w-4xl mx-auto px-4 -mt-10 relative z-20 reveal-section">
+      <div class="ornate-card rounded-2xl p-6 sm:p-10 text-center">
+        <p class="text-xs uppercase tracking-[0.25em] font-bold mb-4" style="color: var(--accent);">Counting Down to Forever</p>
+        <div class="grid grid-cols-4 gap-3 sm:gap-6 max-w-lg mx-auto mb-8">
+          <div class="p-3 sm:p-4 rounded-xl" style="background-color: var(--bg-secondary);"><div id="cdDays" class="font-serif-display text-2xl sm:text-4xl font-bold" style="color: var(--accent);">00</div><div class="text-[11px] uppercase tracking-wider mt-1" style="color: var(--text-secondary);">Days</div></div>
+          <div class="p-3 sm:p-4 rounded-xl" style="background-color: var(--bg-secondary);"><div id="cdHours" class="font-serif-display text-2xl sm:text-4xl font-bold" style="color: var(--accent);">00</div><div class="text-[11px] uppercase tracking-wider mt-1" style="color: var(--text-secondary);">Hours</div></div>
+          <div class="p-3 sm:p-4 rounded-xl" style="background-color: var(--bg-secondary);"><div id="cdMins" class="font-serif-display text-2xl sm:text-4xl font-bold" style="color: var(--accent);">00</div><div class="text-[11px] uppercase tracking-wider mt-1" style="color: var(--text-secondary);">Minutes</div></div>
+          <div class="p-3 sm:p-4 rounded-xl" style="background-color: var(--bg-secondary);"><div id="cdSecs" class="font-serif-display text-2xl sm:text-4xl font-bold" style="color: var(--accent);">00</div><div class="text-[11px] uppercase tracking-wider mt-1" style="color: var(--text-secondary);">Seconds</div></div>
+        </div>
+        <div class="max-w-2xl mx-auto border-t pt-7" style="border-color: rgba(212,175,55,.3);">
+          <p class="font-serif-display text-lg sm:text-xl italic leading-relaxed">"With joyful hearts, we invite our beloved family and friends to bless us with your presence, laughter, and love as we begin our forever together."</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Events -->
+    <section class="max-w-5xl mx-auto px-4 mt-14 reveal-section">
+      <div class="text-center mb-8">
+        <p class="text-xs uppercase tracking-[0.25em] font-bold mb-2" style="color: var(--accent);">The Celebrations</p>
+        <h2 class="font-serif-display text-3xl sm:text-4xl font-bold">Wedding Itinerary</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="ornate-card rounded-2xl p-6 transition hover:-translate-y-1">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <span class="text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded-full" style="background-color: var(--bg-secondary); color: var(--accent-dark);">Event 01</span>
+            <i data-lucide="sparkles" class="w-4 h-4" style="color: var(--accent);"></i>
+          </div>
+          <h3 class="font-serif-display text-2xl font-bold mb-2">Grand Reception</h3>
+          <div class="space-y-1.5 text-sm" style="color: var(--text-secondary);">
+            <p class="flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4" style="color: var(--accent);"></i><span>Nov 28, 2026 · 7:00 PM</span></p>
+            <p class="flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4" style="color: var(--accent);"></i><span>TTD Kalyana Mandapam</span></p>
+            <p class="flex items-center gap-2"><i data-lucide="info" class="w-4 h-4" style="color: var(--accent);"></i><span>Celebratory feast &amp; blessings</span></p>
+          </div>
+        </div>
+        <div class="ornate-card rounded-2xl p-6 transition hover:-translate-y-1">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <span class="text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded-full" style="background-color: var(--bg-secondary); color: var(--accent-dark);">Event 02</span>
+            <i data-lucide="sparkles" class="w-4 h-4" style="color: var(--accent);"></i>
+          </div>
+          <h3 class="font-serif-display text-2xl font-bold mb-2">Muhurtham</h3>
+          <div class="space-y-1.5 text-sm" style="color: var(--text-secondary);">
+            <p class="flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4" style="color: var(--accent);"></i><span>Sunday, 29th November, 2026 · 4:30 AM</span></p>
+            <p class="flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4" style="color: var(--accent);"></i><span>TTD Kalyana Mandapam</span></p>
+            <p class="flex items-center gap-2"><i data-lucide="info" class="w-4 h-4" style="color: var(--accent);"></i><span>Sacred wedding ceremony</span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Venue -->
+    <section class="max-w-4xl mx-auto px-4 mt-14 reveal-section">
+      <div class="ornate-card rounded-2xl p-6 sm:p-10 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div class="text-center sm:text-left">
+          <p class="text-xs uppercase tracking-[0.25em] font-bold mb-2" style="color: var(--accent);">Venue &amp; Attire</p>
+          <h2 class="font-serif-display text-2xl font-bold mb-2">T.T.D Kalyana Mandapam, Shanthipuram</h2>
+          <p class="text-sm mb-3" style="color: var(--text-secondary);">Santhipuram, Kuppam Main Road, Andhra Pradesh</p>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold" style="background-color: var(--bg-secondary); color: var(--accent-dark);">
+            <i data-lucide="shirt" class="w-3.5 h-3.5"></i><span>Dress Code: Traditional / Festive Ethnic</span>
+          </span>
+        </div>
+        <a href="https://maps.google.com/?q=T.T.D%20Kalyana%20Mandapam%2C%20Shanthipuram%20Santhipuram%2C%20Kuppam%20Main%20Road%2C%20Andhra%20Pradesh" target="_blank" rel="noopener noreferrer" class="px-5 py-3 rounded-xl font-semibold text-sm text-white shadow-md transition hover:opacity-90 flex items-center gap-2 shrink-0" style="background: linear-gradient(135deg, var(--accent), var(--accent-dark));">
+          <i data-lucide="navigation" class="w-4 h-4"></i><span>Open in Google Maps</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- RSVP -->
+    <section class="max-w-3xl mx-auto px-4 mt-14 reveal-section">
+      <div class="ornate-card rounded-2xl p-6 sm:p-10">
+        <div class="text-center mb-6">
+          <p class="text-xs uppercase tracking-[0.25em] font-bold mb-2" style="color: var(--accent);">Kindly Respond</p>
+          <h2 class="font-serif-display text-3xl font-bold">RSVP &amp; Blessings</h2>
+          <p class="text-sm mt-1" style="color: var(--text-secondary);">Let us know you're coming so we can welcome you warmly.</p>
+        </div>
+        <form id="rsvpForm" class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="rsvpName" class="block text-xs font-semibold mb-1">Your Full Name</label>
+              <input id="rsvpName" type="text" required placeholder="e.g., Priya &amp; Karthik" class="w-full px-3.5 py-2.5 rounded-lg border border-stone-300 text-stone-900 bg-white focus:ring-2 focus:ring-amber-500 outline-none">
+            </div>
+            <div>
+              <label for="rsvpGuests" class="block text-xs font-semibold mb-1">Number of Guests</label>
+              <select id="rsvpGuests" class="w-full px-3.5 py-2.5 rounded-lg border border-stone-300 text-stone-900 bg-white focus:ring-2 focus:ring-amber-500 outline-none">
+                <option value="1">1 Guest</option><option value="2" selected>2 Guests</option><option value="3">3 Guests</option><option value="4">4 Guests</option><option value="5+">5+ Family Members</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label for="rsvpStatus" class="block text-xs font-semibold mb-1">Attendance</label>
+            <select id="rsvpStatus" class="w-full px-3.5 py-2.5 rounded-lg border border-stone-300 text-stone-900 bg-white focus:ring-2 focus:ring-amber-500 outline-none">
+              <option value="Joyfully Attending">Joyfully Attending</option>
+              <option value="Attending Reception Only">Attending Reception Only</option>
+              <option value="Sending Warm Blessings">Unable to Attend — Sending Warm Blessings</option>
+            </select>
+          </div>
+          <div>
+            <label for="rsvpWish" class="block text-xs font-semibold mb-1">Blessings or Note for the Couple</label>
+            <textarea id="rsvpWish" rows="2" placeholder="Wishing you a lifetime of happiness..." class="w-full px-3.5 py-2.5 rounded-lg border border-stone-300 text-stone-900 bg-white focus:ring-2 focus:ring-amber-500 outline-none"></textarea>
+          </div>
+          <button type="submit" class="w-full py-3 rounded-xl font-semibold text-white shadow-md transition hover:opacity-95 flex items-center justify-center gap-2" style="background: linear-gradient(135deg, var(--accent), var(--accent-dark));">
+            <i data-lucide="heart-handshake" class="w-5 h-5"></i><span>Send RSVP &amp; Blessings</span>
+          </button>
+        </form>
+        <div id="rsvpWall" class="mt-6 space-y-2.5 hidden">
+          <p class="text-xs font-bold uppercase tracking-wider" style="color: var(--accent);">Recent Guest Blessings</p>
+          <div id="rsvpList" class="space-y-2"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="max-w-3xl mx-auto px-4 mt-10 text-center">
+      <button id="shareBtn" type="button" class="px-5 py-2.5 rounded-xl text-sm font-semibold border transition inline-flex items-center gap-2" style="border-color: var(--border-ornate); background-color: var(--bg-card);">
+        <i data-lucide="share-2" class="w-4 h-4"></i><span>Copy Invitation Link</span>
+      </button>
+    </section>
+  </main>
+
+  <div id="toastBanner" class="toast-banner px-5 py-3 rounded-xl bg-stone-900 text-amber-100 text-sm font-medium shadow-xl">
+    <span id="toastText"></span>
+  </div>
+
+  <script>
+    (function () {
+      var EVENT_DATE = new Date('2026-11-29T04:30:00+05:30').getTime(); // IST
+      var RSVP_KEY = 'wedding_rsvps_v1';
+      var rsvps = [];
+      var musicPlaying = false, musicTimer = null, audioCtx = null;
+
+      var curtain = document.getElementById('curtainOverlay');
+
+      function icons() { if (window.lucide) lucide.createIcons(); }
+      function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+      function toast(msg) {
+        var t = document.getElementById('toastBanner');
+        document.getElementById('toastText').textContent = msg;
+        t.classList.add('show');
+        setTimeout(function () { t.classList.remove('show'); }, 2600);
+      }
+
+      // Entrance
+      document.getElementById('openSealBtn').addEventListener('click', function () {
+        curtain.classList.add('opening');
+        if (typeof confetti === 'function') confetti({ particleCount: 90, spread: 80, origin: { y: .55 }, colors: ['#d4af37','#f7e49c','#9e1b42','#ffffff'] });
+        if (!musicPlaying) startChime();
+        setTimeout(function () { curtain.classList.add('opened'); window.scrollTo(0, 0); }, 950);
+      });
+
+      // Chime
+      function updateMusicIcon() {
+        var btn = document.getElementById('musicToggleBtn');
+        btn.innerHTML = '<i data-lucide="' + (musicPlaying ? 'volume-2' : 'volume-x') + '" class="w-4 h-4"></i>';
+        icons();
+      }
+      function startChime() {
+        try {
+          var AC = window.AudioContext || window.webkitAudioContext;
+          if (!AC) return;
+          if (!audioCtx) audioCtx = new AC();
+          if (audioCtx.state === 'suspended') audioCtx.resume();
+          musicPlaying = true; updateMusicIcon();
+          var notes = [523.25, 659.25, 783.99, 987.77, 1046.5, 783.99, 659.25], step = 0;
+          function play() {
+            if (!musicPlaying) return;
+            var o = audioCtx.createOscillator(), g = audioCtx.createGain(), n = audioCtx.currentTime;
+            o.type = 'sine'; o.frequency.setValueAtTime(notes[step++ % notes.length], n);
+            g.gain.setValueAtTime(.001, n);
+            g.gain.exponentialRampToValueAtTime(.045, n + .08);
+            g.gain.exponentialRampToValueAtTime(.0001, n + 1.6);
+            o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(n + 1.65);
+          }
+          play(); clearInterval(musicTimer); musicTimer = setInterval(play, 950);
+        } catch (e) {}
+      }
+      function stopChime() { musicPlaying = false; clearInterval(musicTimer); updateMusicIcon(); }
+      document.getElementById('musicToggleBtn').addEventListener('click', function () { musicPlaying ? stopChime() : startChime(); });
+
+      // Countdown
+      function tick() {
+        var diff = Math.max(0, EVENT_DATE - Date.now());
+        var v = [Math.floor(diff / 864e5), Math.floor(diff / 36e5) % 24, Math.floor(diff / 6e4) % 60, Math.floor(diff / 1e3) % 60];
+        ['cdDays','cdHours','cdMins','cdSecs'].forEach(function (id, i) { document.getElementById(id).textContent = String(v[i]).padStart(2, '0'); });
+      }
+      tick(); setInterval(tick, 1000);
+
+      // Scroll reveal
+      var sections = document.querySelectorAll('.reveal-section');
+      if ('IntersectionObserver' in window) {
+        var obs = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) e.target.classList.add('visible'); }); }, { threshold: .12 });
+        sections.forEach(function (s) { obs.observe(s); });
+      } else { sections.forEach(function (s) { s.classList.add('visible'); }); }
+
+      // RSVP (stored in the guest's own browser only)
+      try { rsvps = JSON.parse(localStorage.getItem(RSVP_KEY) || '[]'); } catch (e) {}
+      function renderRsvps() {
+        var wall = document.getElementById('rsvpWall'), list = document.getElementById('rsvpList');
+        if (!rsvps.length) { wall.classList.add('hidden'); return; }
+        wall.classList.remove('hidden');
+        list.innerHTML = rsvps.slice(0, 6).map(function (r) {
+          return '<div class="p-3 rounded-xl border text-sm" style="border-color:rgba(212,175,55,.35);background-color:var(--bg-secondary)">' +
+            '<div class="flex items-center justify-between font-semibold"><span>' + esc(r.name) + ' (' + esc(r.guests) + ' Guests)</span>' +
+            '<span class="text-xs px-2 py-0.5 rounded-full bg-white/70 text-stone-800">' + esc(r.status) + '</span></div>' +
+            (r.wish ? '<p class="text-xs mt-1 italic">"' + esc(r.wish) + '"</p>' : '') + '</div>';
+        }).join('');
+      }
+      document.getElementById('rsvpForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var name = document.getElementById('rsvpName').value.trim();
+        if (!name) return;
+        rsvps.unshift({ name: name, guests: document.getElementById('rsvpGuests').value, status: document.getElementById('rsvpStatus').value, wish: document.getElementById('rsvpWish').value.trim() });
+        try { localStorage.setItem(RSVP_KEY, JSON.stringify(rsvps)); } catch (err) {}
+        e.target.reset(); renderRsvps();
+        toast('Thank you! Your RSVP & blessings have been recorded.');
+        if (typeof confetti === 'function') confetti({ particleCount: 70, spread: 65, origin: { y: .7 } });
+      });
+      renderRsvps();
+
+      // Share
+      document.getElementById('shareBtn').addEventListener('click', function () {
+        var url = location.href.split('#')[0];
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(function () { toast('Invitation link copied!'); }, function () { toast(url); });
+        } else { toast(url); }
+      });
+
+      // Particles
+      (function () {
+        var c = document.getElementById('particleCanvas'), ctx = c.getContext('2d');
+        var w = c.width = innerWidth, h = c.height = innerHeight;
+        addEventListener('resize', function () { w = c.width = innerWidth; h = c.height = innerHeight; });
+        var ps = Array.from({ length: 34 }, function () { return { x: Math.random() * w, y: Math.random() * h, r: 1.5 + Math.random() * 3.5, vx: (Math.random() - .5) * .45, vy: .35 + Math.random() * .75, a: .25 + Math.random() * .5, petal: Math.random() > .55, ang: Math.random() * 6.28 }; });
+        (function draw() {
+          ctx.clearRect(0, 0, w, h);
+          ps.forEach(function (p) {
+            p.x += p.vx + Math.sin(p.ang) * .25; p.y += p.vy; p.ang += .015;
+            if (p.y > h + 10) { p.y = -10; p.x = Math.random() * w; }
+            ctx.save(); ctx.globalAlpha = p.a;
+            if (p.petal) { ctx.translate(p.x, p.y); ctx.rotate(p.ang); ctx.fillStyle = '#e6c665'; ctx.beginPath(); ctx.ellipse(0, 0, p.r * 1.6, p.r * .85, 0, 0, 6.28); ctx.fill(); }
+            else { ctx.fillStyle = '#f5d77f'; ctx.beginPath(); ctx.arc(p.x, p.y, p.r * .7, 0, 6.28); ctx.fill(); }
+            ctx.restore();
+          });
+          requestAnimationFrame(draw);
+        })();
+      })();
+
+      icons();
+    })();
+  </script>
+</body>
+</html>
