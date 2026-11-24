@@ -1,0 +1,1981 @@
+<!DOCTYPE html>
+<html lang="en"><head><base href="https://1229395816-atari-embeds.googleusercontent.com/embeds/928209f300890cc864ba5f6dbbfbf517/inner-frame-minified.html?jsh=m%3B%2F_%2Fscs%2Fabc-static%2F_%2Fjs%2Fk%3Dgapi.lb.en.smUXTMp7CeY.O%2Fd%3D1%2Frs%3DAHpOoo_-UMASGI-dbLvJPxfO6N46l3l46A%2Fm%3D__features__" target="_blank">
+      <script>window.location.hash = "#invite=eyJ0aGVtZSI6InRoZW1lLXJveWFsLWdvbGQiLCJwYXJ0bmVyMSI6IlBhcnRoYSBTYXJhZGhpIiwicGFydG5lcjIiOiJTdWNoaXRyYSIsImhvc3RMaW5lIjoiVG9nZXRoZXIgd2l0aCBGYW1pbHkgJiBGcmllbmRzIiwiaGFzaHRhZyI6IiNQYXJ0aGFXZWRzU3VjaGkiLCJkYXRlIjoiMjAyNi0xMS0yOSIsInRpbWUiOiIwNDozMCIsImNpdHkiOiJTYW50aGlwdXJhbSwgS3VwcGFtIE1haW4gUm9hZCwgQW5kaHJhIFByYWRlc2giLCJ2ZW51ZU5hbWUiOiJULlQuRCBLYWx5YW5hIE1hbmRhcGFtLCBTaGFudGhpcHVyYW0iLCJkcmVzc0NvZGUiOiJUcmFkaXRpb25hbCAvIEZlc3RpdmUgRXRobmljIiwibWVzc2FnZSI6IldpdGggam95ZnVsIGhlYXJ0cywgd2UgaW52aXRlIG91ciBiZWxvdmVkIGZhbWlseSBhbmQgZnJpZW5kcyB0byBibGVzcyB1cyB3aXRoIHlvdXIgcHJlc2VuY2UsIGxhdWdodGVyLCBhbmQgbG92ZSBhcyB3ZSBiZWdpbiBvdXIgZm9yZXZlciB0b2dldGhlci4iLCJldmVudHMiOlt7InRpdGxlIjoiR3JhbmQgUmVjZXB0aW9uIiwid2hlbiI6Ik5vdiAyOCwgMjAyNiDCtyA3OjAwIFBNIiwicGxhY2UiOiJUVEQgS2FseWFuYSBNYW5kYXBhbSIsIm5vdGUiOiJDZWxlYnJhdG9yeSBmZWFzdCAmIGJsZXNzaW5ncyJ9LHsidGl0bGUiOiJNdWh1cnRoYW0iLCJ3aGVuIjoiU3VuZGF5LCAyOXRoIE5vdmVtYmVyLCAyMDI2IMK3IDQ6MzAgQU0iLCJwbGFjZSI6IlRURCBLYWx5YW5hIE1hbmRhcGFtIiwibm90ZSI6IlNhY3JlZCB3ZWRkaW5nIGNlcmVtb255In1dfQ%3D%3D";</script>
+  <script>
+        (function() {
+          if (window.__atariInitRender) {
+            window.__atariInitRender(false);
+            return;
+          }
+          var isLiquid = false;
+          var guardsInstalled = false;
+          var LOCAL_DOWNLOAD_URL_RE = /^(?:blob|data):/i;
+          var PROTOCOL_RELATIVE_RE = /^[\/\\]{2}/;
+          var FORBIDDEN_TAG_RE = /^(?:iframe|frame|object|embed)$/i;
+          var XLINK_NS = 'http://www.w3.org/1999/xlink';
+          var origPreventDefault = Event.prototype.preventDefault;
+          var origStopPropagation = Event.prototype.stopPropagation;
+          var origStopImmediatePropagation =
+              Event.prototype.stopImmediatePropagation;
+          var origAddEventListener = EventTarget.prototype.addEventListener;
+          var origRemoveEventListener =
+              EventTarget.prototype.removeEventListener;
+          var origWindowStop = window.stop ? window.stop.bind(window) : null;
+          var origElementRemove = Element.prototype.remove;
+          var origGetAttribute = Element.prototype.getAttribute;
+          var origGetAttributeNS = Element.prototype.getAttributeNS;
+          var origHasAttribute = Element.prototype.hasAttribute;
+          var origHasAttributeNS = Element.prototype.hasAttributeNS;
+          var origSetAttribute = Element.prototype.setAttribute;
+          var origSetAttributeNS = Element.prototype.setAttributeNS;
+          var origSetAttributeNode = Element.prototype.setAttributeNode;
+          var origSetAttributeNodeNS = Element.prototype.setAttributeNodeNS;
+          var origRemoveAttribute = Element.prototype.removeAttribute;
+          var origRemoveAttributeNS = Element.prototype.removeAttributeNS;
+          var origComposedPath = Event.prototype.composedPath;
+          var origCreateElement = Document.prototype.createElement;
+          var origCreateElementNS = Document.prototype.createElementNS;
+          var validatingEvents =
+              typeof WeakSet !== 'undefined' ? new WeakSet() : null;
+          var activeDeferredListeners = null;
+          var inProgrammaticClick = 0;
+
+          function isLinkElement(el) {
+            var tag = el && el.tagName && el.tagName.toLowerCase();
+            return tag === 'a' || tag === 'area';
+          }
+
+          function hasLinkHref(link) {
+            return origHasAttribute.call(link, 'href') ||
+                origHasAttributeNS.call(link, XLINK_NS, 'href');
+          }
+
+          // Returns the href of an HTML or SVG link, which may only have the
+          // legacy xlink:href attribute.
+          function getLinkHref(link) {
+            return origGetAttribute.call(link, 'href') ||
+                origGetAttributeNS.call(link, XLINK_NS, 'href');
+          }
+
+          function removeLinkHref(link) {
+            origRemoveAttribute.call(link, 'href');
+            origRemoveAttributeNS.call(link, XLINK_NS, 'href');
+          }
+
+          // Returns whether the link downloads a file that the app created,
+          // which doesn't send data to other sites.
+          function isLocalDownloadLink(link, href) {
+            return origHasAttribute.call(link, 'download') &&
+                LOCAL_DOWNLOAD_URL_RE.test(href);
+          }
+
+          function isRefreshValue(val) {
+            return String(val || '').trim().toLowerCase() === 'refresh';
+          }
+
+          function purgeMetaRefresh(root) {
+            if (!root || !root.querySelectorAll) return;
+            var metas = root.querySelectorAll('meta[http-equiv]');
+            for (var i = 0; i < metas.length; i++) {
+              if (isRefreshValue(
+                  origGetAttribute.call(metas[i], 'http-equiv'))) {
+                origElementRemove.call(metas[i]);
+              }
+            }
+            var frames = root.querySelectorAll('iframe, frame, object, embed');
+            for (var j = 0; j < frames.length; j++) {
+              origElementRemove.call(frames[j]);
+            }
+          }
+
+          function getParentOrHost(node) {
+            if (!node) return null;
+            if (node.parentElement) return node.parentElement;
+            var parent = node.parentNode;
+            return parent && parent.host ? parent.host : null;
+          }
+
+          function findLinkFromNode(startNode, requireHref) {
+            var el = startNode;
+            while (el && el !== document) {
+              if (isLinkElement(el) && (!requireHref || hasLinkHref(el))) {
+                return el;
+              }
+              el = getParentOrHost(el);
+            }
+            return null;
+          }
+
+          function findLinkFromEvent(e) {
+            if (origComposedPath) {
+              try {
+                var path = origComposedPath.call(e);
+                for (var i = 0; i < path.length; i++) {
+                  var node = path[i];
+                  if (isLinkElement(node) && hasLinkHref(node)) {
+                    return node;
+                  }
+                }
+              } catch (err) {}
+            }
+            return findLinkFromNode(e.target, true);
+          }
+
+          // Keeps the app from opening popups, navigating its frame, and
+          // adding meta refresh tags. document.open() keeps the window, its
+          // prototypes, and the document, so these are installed once per
+          // frame rather than on every render.
+          function installNavigationGuards() {
+            try {
+              Object.defineProperty(window, 'open', {
+                value: function() {
+                  return null;
+                },
+                writable: false,
+                configurable: false
+              });
+            } catch (err) {
+              window.open = function() {
+                return null;
+              };
+            }
+            if (window.navigation && window.navigation.addEventListener) {
+              origAddEventListener.call(
+                  window.navigation, 'navigate', function(e) {
+                    if (!e.cancelable || e.destination.sameDocument) return;
+                    if (e.downloadRequest !== null &&
+                        LOCAL_DOWNLOAD_URL_RE.test(e.destination.url)) {
+                      return;
+                    }
+                    origPreventDefault.call(e);
+                  }, true);
+            }
+            var iframeWinDesc = typeof HTMLIFrameElement !== 'undefined' &&
+                Object.getOwnPropertyDescriptor(
+                    HTMLIFrameElement.prototype, 'contentWindow');
+            if (iframeWinDesc && iframeWinDesc.get) {
+              Object.defineProperty(
+                  HTMLIFrameElement.prototype, 'contentWindow', {
+                    get: function() {
+                      return null;
+                    },
+                    configurable: false,
+                    enumerable: true
+                  });
+            }
+            var iframeDocDesc = typeof HTMLIFrameElement !== 'undefined' &&
+                Object.getOwnPropertyDescriptor(
+                    HTMLIFrameElement.prototype, 'contentDocument');
+            if (iframeDocDesc && iframeDocDesc.get) {
+              Object.defineProperty(
+                  HTMLIFrameElement.prototype, 'contentDocument', {
+                    get: function() {
+                      return null;
+                    },
+                    configurable: false,
+                    enumerable: true
+                  });
+            }
+            Document.prototype.createElement = function(tagName, options) {
+              if (FORBIDDEN_TAG_RE.test(String(tagName || ''))) {
+                return origCreateElement.call(this, 'div', options);
+              }
+              return origCreateElement.apply(this, arguments);
+            };
+            if (origCreateElementNS) {
+              Document.prototype.createElementNS = function(ns, qName, opts) {
+                var local = String(qName || '').split(':').pop();
+                if (FORBIDDEN_TAG_RE.test(local)) {
+                  return origCreateElement.call(this, 'div');
+                }
+                return origCreateElementNS.apply(this, arguments);
+              };
+            }
+            var origClick = HTMLElement.prototype.click;
+            HTMLElement.prototype.click = function() {
+              var link = findLinkFromNode(this, true);
+              if (link) {
+                var clickHref = (getLinkHref(link) || '').trim();
+                if (!clickHref.startsWith('#') &&
+                    !isLocalDownloadLink(link, clickHref)) {
+                  return;
+                }
+              }
+              inProgrammaticClick++;
+              try {
+                return origClick.apply(this, arguments);
+              } finally {
+                inProgrammaticClick--;
+              }
+            };
+            function isMetaRefreshAttr(el, name, value) {
+              return el && el.tagName &&
+                  el.tagName.toLowerCase() === 'meta' &&
+                  String(name || '').trim().toLowerCase() === 'http-equiv' &&
+                  isRefreshValue(value);
+            }
+            function validateIfActiveLink(el) {
+              if (!activeDeferredListeners || !isLinkElement(el) ||
+                  !hasLinkHref(el)) {
+                return;
+              }
+              var curHref = (getLinkHref(el) || '').trim();
+              if (!curHref.startsWith('#')) {
+                handleLiquidExternalLink(
+                    activeDeferredListeners.event, el, curHref,
+                    activeDeferredListeners.programmatic);
+              }
+            }
+            Element.prototype.setAttribute = function(name, value) {
+              if (isMetaRefreshAttr(this, name, value)) {
+                origElementRemove.call(this);
+                return;
+              }
+              var res = origSetAttribute.apply(this, arguments);
+              if (String(name || '').toLowerCase() === 'href') {
+                validateIfActiveLink(this);
+              }
+              return res;
+            };
+            if (origSetAttributeNS) {
+              Element.prototype.setAttributeNS = function(ns, name, value) {
+                var local = String(name || '');
+                if (local.includes(':')) local = local.split(':').pop();
+                if (isMetaRefreshAttr(this, local, value)) {
+                  origElementRemove.call(this);
+                  return;
+                }
+                var res = origSetAttributeNS.apply(this, arguments);
+                if (local.toLowerCase() === 'href') {
+                  validateIfActiveLink(this);
+                }
+                return res;
+              };
+            }
+            if (origSetAttributeNode) {
+              Element.prototype.setAttributeNode = function(attr) {
+                if (attr && isMetaRefreshAttr(this, attr.name, attr.value)) {
+                  origElementRemove.call(this);
+                  return null;
+                }
+                var res = origSetAttributeNode.apply(this, arguments);
+                if (attr && String(attr.name || '').toLowerCase() === 'href') {
+                  validateIfActiveLink(this);
+                }
+                return res;
+              };
+            }
+            if (origSetAttributeNodeNS) {
+              Element.prototype.setAttributeNodeNS = function(attr) {
+                var name = attr && (attr.localName || attr.name);
+                if (attr && isMetaRefreshAttr(this, name, attr.value)) {
+                  origElementRemove.call(this);
+                  return null;
+                }
+                var res = origSetAttributeNodeNS.apply(this, arguments);
+                if (String(name || '').toLowerCase() === 'href') {
+                  validateIfActiveLink(this);
+                }
+                return res;
+              };
+            }
+            function wrapHrefSetter(ctor) {
+              if (!ctor || !ctor.prototype) return;
+              var hrefDesc = Object.getOwnPropertyDescriptor(
+                  ctor.prototype, 'href');
+              if (hrefDesc && hrefDesc.set) {
+                Object.defineProperty(ctor.prototype, 'href', {
+                  get: hrefDesc.get,
+                  set: function(value) {
+                    hrefDesc.set.call(this, value);
+                    validateIfActiveLink(this);
+                  },
+                  configurable: true,
+                  enumerable: true
+                });
+              }
+            }
+            if (typeof HTMLAnchorElement !== 'undefined') {
+              wrapHrefSetter(HTMLAnchorElement);
+            }
+            if (typeof HTMLAreaElement !== 'undefined') {
+              wrapHrefSetter(HTMLAreaElement);
+            }
+            if (typeof HTMLMetaElement !== 'undefined') {
+              var desc = Object.getOwnPropertyDescriptor(
+                  HTMLMetaElement.prototype, 'httpEquiv');
+              if (desc && desc.set) {
+                Object.defineProperty(HTMLMetaElement.prototype, 'httpEquiv', {
+                  get: desc.get,
+                  set: function(value) {
+                    if (isRefreshValue(value)) {
+                      origElementRemove.call(this);
+                      return;
+                    }
+                    desc.set.call(this, value);
+                  },
+                  configurable: true,
+                  enumerable: true
+                });
+              }
+            }
+            Event.prototype.stopPropagation = function() {
+              if (validatingEvents && validatingEvents.has(this)) {
+                return;
+              }
+              return origStopPropagation.apply(this, arguments);
+            };
+            Event.prototype.stopImmediatePropagation = function() {
+              if (validatingEvents && validatingEvents.has(this)) {
+                return;
+              }
+              return origStopImmediatePropagation.apply(this, arguments);
+            };
+            var cancelBubbleDesc = Object.getOwnPropertyDescriptor(
+                Event.prototype, 'cancelBubble');
+            if (cancelBubbleDesc && cancelBubbleDesc.set) {
+              Object.defineProperty(Event.prototype, 'cancelBubble', {
+                get: cancelBubbleDesc.get,
+                set: function(val) {
+                  if (val && validatingEvents && validatingEvents.has(this)) {
+                    return;
+                  }
+                  cancelBubbleDesc.set.call(this, val);
+                },
+                configurable: true,
+                enumerable: true
+              });
+            }
+            function wrapAddEventListener(origFn) {
+              return function(type, listener, options) {
+                var res = origFn.apply(this, arguments);
+                if (activeDeferredListeners &&
+                    type === activeDeferredListeners.type) {
+                  origRemoveEventListener.call(
+                      window, activeDeferredListeners.type,
+                      activeDeferredListeners.fn, false);
+                  origAddEventListener.call(
+                      window, activeDeferredListeners.type,
+                      activeDeferredListeners.fn, false);
+                }
+                return res;
+              };
+            }
+            var origWinAdd = window.addEventListener || origAddEventListener;
+            EventTarget.prototype.addEventListener =
+                wrapAddEventListener(origAddEventListener);
+            if (typeof Window !== 'undefined' && Window.prototype) {
+              try {
+                Window.prototype.addEventListener =
+                    wrapAddEventListener(origWinAdd);
+              } catch (err) {}
+            }
+            try {
+              window.addEventListener = wrapAddEventListener(origWinAdd);
+            } catch (err) {}
+            function observeMutations(target) {
+              if (!target || typeof MutationObserver === 'undefined') return;
+              new MutationObserver(function(mutations) {
+                if (activeDeferredListeners) {
+                  for (var i = 0; i < mutations.length; i++) {
+                    var m = mutations[i];
+                    if (m.type === 'attributes' &&
+                        isLinkElement(m.target) &&
+                        hasLinkHref(m.target)) {
+                      var mHref = (getLinkHref(m.target) || '').trim();
+                      if (!mHref.startsWith('#')) {
+                        handleLiquidExternalLink(
+                            activeDeferredListeners.event, m.target, mHref,
+                            activeDeferredListeners.programmatic);
+                      }
+                    }
+                  }
+                }
+                purgeMetaRefresh(target);
+              }).observe(target, {
+                childList: true,
+                subtree: true,
+                attributes: true,
+                attributeFilter: ['http-equiv', 'href']
+              });
+            }
+            observeMutations(document);
+            if (Element.prototype.attachShadow) {
+              var origAttachShadow = Element.prototype.attachShadow;
+              Element.prototype.attachShadow = function() {
+                var sr = origAttachShadow.apply(this, arguments);
+                observeMutations(sr);
+                return sr;
+              };
+            }
+          }
+
+          // Returns the URL of an absolute or protocol-relative href, or null.
+          function parseAbsoluteUrl(href) {
+            var candidate =
+                PROTOCOL_RELATIVE_RE.test(href) ? 'https:' + href : href;
+            try {
+              return new URL(candidate);
+            } catch (err) {
+              return null;
+            }
+          }
+
+          // Opens the link in a new tab through the Google redirector, which
+          // warns users before they leave for another site.
+          function routeThroughRedirector(link, url) {
+            var redirectUrl = url.href;
+            if (url.origin !== 'https://www.google.com' ||
+                url.pathname !== '/url' ||
+                !url.searchParams.has('q')) {
+              redirectUrl = 'https://www.google.com/url?q=' +
+                  encodeURIComponent(url.href);
+            }
+            origSetAttribute.call(link, 'href', redirectUrl);
+            origRemoveAttributeNS.call(link, XLINK_NS, 'href');
+            origSetAttribute.call(link, 'target', '_blank');
+            origSetAttribute.call(link, 'rel', 'noopener noreferrer');
+          }
+
+          // Lets Liquid App links open web pages only through the redirector,
+          // and blocks links with other protocols, such as javascript:.
+          // Context menu events rewrite or remove the link attribute so that
+          // "Open link in new tab" also goes through the redirector or is
+          // disabled.
+          function handleLiquidExternalLink(e, link, href, programmatic) {
+            if (isLocalDownloadLink(link, href)) return;
+            if (programmatic || inProgrammaticClick > 0) {
+              removeLinkHref(link);
+              origPreventDefault.call(e);
+              origStopPropagation.call(e);
+              return;
+            }
+            var url = parseAbsoluteUrl(href);
+            var protocol = url ? url.protocol : '';
+            if (protocol === 'http:' || protocol === 'https:') {
+              routeThroughRedirector(link, url);
+            } else if (protocol !== 'mailto:' && protocol !== 'tel:') {
+              if (e.type === 'contextmenu') {
+                removeLinkHref(link);
+              } else {
+                origPreventDefault.call(e);
+                origStopPropagation.call(e);
+              }
+            }
+          }
+
+          function validateLiquidLinkAfterBubble(e, anchor, programmatic) {
+            if (validatingEvents) {
+              validatingEvents.add(e);
+            }
+            var state = {
+              type: e.type,
+              fn: onBubble,
+              event: e,
+              programmatic: programmatic
+            };
+            activeDeferredListeners = state;
+            function checkTarget(ev) {
+              var targetLink = anchor || findLinkFromEvent(ev);
+              if (!targetLink || !hasLinkHref(targetLink)) return;
+              var latestHref = (getLinkHref(targetLink) || '').trim();
+              if (!latestHref.startsWith('#')) {
+                handleLiquidExternalLink(
+                    ev, targetLink, latestHref, programmatic);
+              }
+            }
+            Promise.resolve().then(function() {
+              checkTarget(e);
+              if (activeDeferredListeners === state) {
+                activeDeferredListeners = null;
+              }
+            });
+            function onBubble(ev) {
+              origRemoveEventListener.call(window, ev.type, onBubble, false);
+              checkTarget(ev);
+            }
+            origAddEventListener.call(window, e.type, onBubble, false);
+          }
+
+          function handleLinkClick(e) {
+            var programmatic = inProgrammaticClick > 0;
+            // Find the nearest ancestor link (handles nested icons, spans,
+            // svgs, and shadow DOM).
+            var anchor = findLinkFromEvent(e);
+            if (!anchor) {
+              if (isLiquid) {
+                validateLiquidLinkAfterBubble(e, null, programmatic);
+              }
+              return;
+            }
+
+            if (isLiquid) {
+              validateLiquidLinkAfterBubble(e, anchor, programmatic);
+            }
+            var href = (getLinkHref(anchor) || '').trim();
+            if (!href.startsWith('#')) {
+              if (isLiquid) {
+                handleLiquidExternalLink(e, anchor, href, programmatic);
+              }
+              return;
+            }
+            if (e.type === 'contextmenu') return;
+
+            // Prevent default <base target="_blank"> navigation to a new blank tab.
+            origPreventDefault.call(e);
+            if (!isLiquid) {
+              origStopPropagation.call(e);
+            }
+
+            // Handle empty anchor or top anchor.
+            if (href === '#' || href === '#top') {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+              return;
+            }
+
+            // Resolve target element by id, falling back to legacy name attribute.
+            var targetId = href.slice(1);
+            try {
+              targetId = decodeURIComponent(targetId);
+            } catch (err) {}
+
+            var targetEl = document.getElementById(targetId);
+            if (!targetEl) {
+              try {
+                var escaped = window.CSS && CSS.escape ? CSS.escape(targetId) : targetId.replace(/["\\]/g, '\\$&');
+                targetEl = document.querySelector('[name="' + escaped + '"]');
+              } catch (err) {}
+            }
+
+            // Smoothly scroll to the target within the embed and update URL hash history.
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              if (window.history && window.history.pushState) {
+                window.history.pushState(null, '', href);
+              }
+            }
+          }
+
+          function initRender(nextIsLiquid) {
+            isLiquid = isLiquid || !!nextIsLiquid;
+            if (isLiquid) {
+              if (!guardsInstalled) {
+                guardsInstalled = true;
+                installNavigationGuards();
+              } else {
+                try {
+                  window.addEventListener =
+                      EventTarget.prototype.addEventListener;
+                } catch (err) {}
+              }
+              // document.open() removes the window's listeners, so this is
+              // added on every render.
+              origAddEventListener.call(window, 'beforeunload', function(e) {
+                origPreventDefault.call(e);
+                if (origWindowStop) {
+                  origWindowStop();
+                }
+              }, true);
+              purgeMetaRefresh(document);
+            }
+            // Listen during capturing phase to preempt <base target="_blank">.
+            origAddEventListener.call(
+                document, 'click', handleLinkClick, true);
+            if (isLiquid) {
+              origAddEventListener.call(
+                  document, 'auxclick', handleLinkClick, true);
+              origAddEventListener.call(
+                  document, 'contextmenu', handleLinkClick, true);
+            }
+          }
+
+          try {
+            Object.defineProperty(window, '__atariInitRender', {
+              value: initRender,
+              writable: false,
+              configurable: false
+            });
+          } catch (err) {
+            window.__atariInitRender = initRender;
+          }
+          initRender(false);
+        })();
+      </script>
+    
+
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Royal Wedding Invitation Studio &amp; Shareable Invite</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <style>
+    :root {
+      --bg-primary: #fdf8f0;
+      --bg-secondary: #f5ebd9;
+      --bg-card: #ffffff;
+      --text-primary: #2d1e12;
+      --text-secondary: #6b5340;
+      --accent: #b8860b;
+      --accent-light: #e6c665;
+      --accent-dark: #855e04;
+      --border-ornate: #d4af37;
+      --hero-grad-1: #2a1810;
+      --hero-grad-2: #4a2c1d;
+    }
+
+    body.theme-royal-gold {
+      --bg-primary: #fdf8f0;
+      --bg-secondary: #f6ead6;
+      --bg-card: #ffffff;
+      --text-primary: #2c1d11;
+      --text-secondary: #6d543e;
+      --accent: #b8860b;
+      --accent-light: #ebd07a;
+      --accent-dark: #805b03;
+      --border-ornate: #d4af37;
+      --hero-grad-1: #2b1810;
+      --hero-grad-2: #52301e;
+    }
+
+    body.theme-udaipur-rose {
+      --bg-primary: #fff6f7;
+      --bg-secondary: #fbe4e8;
+      --bg-card: #ffffff;
+      --text-primary: #3b121e;
+      --text-secondary: #7a3e4f;
+      --accent: #9e1b42;
+      --accent-light: #e89ab0;
+      --accent-dark: #6e0f2c;
+      --border-ornate: #d48c46;
+      --hero-grad-1: #4a0d20;
+      --hero-grad-2: #7d1935;
+    }
+
+    body.theme-midnight-gala {
+      --bg-primary: #0f1424;
+      --bg-secondary: #182038;
+      --bg-card: #1d2642;
+      --text-primary: #f5efe6;
+      --text-secondary: #c5bca8;
+      --accent: #d4af37;
+      --accent-light: #f3dc8c;
+      --accent-dark: #9c7c16;
+      --border-ornate: #d4af37;
+      --hero-grad-1: #090d1a;
+      --hero-grad-2: #1c2747;
+    }
+
+    body.theme-emerald-pearl {
+      --bg-primary: #f4f9f6;
+      --bg-secondary: #e2efe7;
+      --bg-card: #ffffff;
+      --text-primary: #102a20;
+      --text-secondary: #3f6354;
+      --accent: #1b6b4a;
+      --accent-light: #89c4a9;
+      --accent-dark: #0f4730;
+      --border-ornate: #c5a059;
+      --hero-grad-1: #0c2e20;
+      --hero-grad-2: #1a4f39;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      transition: background-color 0.5s ease, color 0.5s ease;
+      overflow-x: hidden;
+    }
+
+    .font-serif-display {
+      font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+    }
+
+    /* Grand Curtain & Seal Overlay */
+    #curtainOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at center, var(--hero-grad-2) 0%, var(--hero-grad-1) 100%);
+      transition: opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.9s;
+    }
+
+    #curtainOverlay.hidden {
+      display: none;
+    }
+
+    #curtainOverlay.opened {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .curtain-door-left,
+    .curtain-door-right {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 50%;
+      background: linear-gradient(135deg, var(--hero-grad-1), var(--hero-grad-2));
+      transition: transform 1.1s cubic-bezier(0.77, 0, 0.175, 1);
+      border-color: var(--border-ornate);
+    }
+
+    .curtain-door-left {
+      left: 0;
+      border-right: 2px solid var(--border-ornate);
+      box-shadow: inset -20px 0 60px rgba(0, 0, 0, 0.45);
+    }
+
+    .curtain-door-right {
+      right: 0;
+      border-left: 2px solid var(--border-ornate);
+      box-shadow: inset 20px 0 60px rgba(0, 0, 0, 0.45);
+    }
+
+    #curtainOverlay.opening .curtain-door-left {
+      transform: translateX(-100%);
+    }
+
+    #curtainOverlay.opening .curtain-door-right {
+      transform: translateX(100%);
+    }
+
+    #curtainOverlay.opening .seal-container {
+      transform: scale(1.25);
+      opacity: 0;
+    }
+
+    .seal-container {
+      position: relative;
+      z-index: 10;
+      padding: 2rem 1.75rem;
+      border-radius: 1.5rem;
+      background: radial-gradient(circle at center, rgba(20, 10, 6, 0.88) 0%, rgba(20, 10, 6, 0.55) 70%, transparent 100%);
+      transition: transform 0.6s ease, opacity 0.6s ease;
+    }
+
+    .wax-seal-btn {
+      width: 132px;
+      height: 132px;
+      border-radius: 9999px;
+      background: radial-gradient(circle at 35% 30%, #f5d77f, #c9971c 55%, #7d5904 100%);
+      box-shadow: 0 0 0 6px rgba(212, 175, 55, 0.25), 0 18px 40px rgba(0, 0, 0, 0.6), inset 0 2px 8px rgba(255, 255, 255, 0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      animation: pulseGlow 2.4s infinite ease-in-out;
+      transition: transform 0.25s ease;
+    }
+
+    .wax-seal-btn:hover {
+      transform: scale(1.07);
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% {
+        box-shadow: 0 0 0 6px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.35), 0 18px 40px rgba(0, 0, 0, 0.6);
+      }
+      50% {
+        box-shadow: 0 0 0 14px rgba(212, 175, 55, 0.12), 0 0 55px rgba(235, 208, 122, 0.65), 0 18px 40px rgba(0, 0, 0, 0.6);
+      }
+    }
+
+    @keyframes slowSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .mandala-spin {
+      animation: slowSpin 60s linear infinite;
+    }
+
+    @keyframes floatGentle {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .float-gentle {
+      animation: floatGentle 4.5s ease-in-out infinite;
+    }
+
+    @keyframes shimmerText {
+      0% { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+
+    .gold-shimmer {
+      background: linear-gradient(90deg, var(--accent-light) 0%, #fff6d6 35%, var(--border-ornate) 50%, #fff6d6 65%, var(--accent-light) 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: shimmerText 5s linear infinite;
+    }
+
+    .reveal-section {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .reveal-section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .ornate-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-ornate);
+      box-shadow: 0 12px 35px -10px rgba(0, 0, 0, 0.12);
+    }
+
+    .ornate-frame {
+      border: 2px solid var(--border-ornate);
+      position: relative;
+    }
+
+    .ornate-frame::before {
+      content: '';
+      position: absolute;
+      inset: 6px;
+      border: 1px solid var(--border-ornate);
+      opacity: 0.45;
+      pointer-events: none;
+    }
+
+    #particleCanvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 30;
+    }
+
+    .toast-banner {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      z-index: 80;
+      opacity: 0;
+      transition: transform 0.35s ease, opacity 0.35s ease;
+    }
+
+    .toast-banner.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+  </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.absolute{position:absolute}.relative{position:relative}.sticky{position:sticky}.top-0{top:0px}.z-10{z-index:10}.z-20{z-index:20}.z-40{z-index:40}.mx-auto{margin-left:auto;margin-right:auto}.-mt-10{margin-top:-2.5rem}.mb-1{margin-bottom:0.25rem}.mb-1\.5{margin-bottom:0.375rem}.mb-2{margin-bottom:0.5rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.mb-5{margin-bottom:1.25rem}.mb-6{margin-bottom:1.5rem}.mb-8{margin-bottom:2rem}.mt-0\.5{margin-top:0.125rem}.mt-1{margin-top:0.25rem}.mt-10{margin-top:2.5rem}.mt-14{margin-top:3.5rem}.mt-6{margin-top:1.5rem}.block{display:block}.flex{display:flex}.inline-flex{display:inline-flex}.grid{display:grid}.hidden{display:none}.h-16{height:4rem}.h-20{height:5rem}.h-3\.5{height:0.875rem}.h-4{height:1rem}.h-5{height:1.25rem}.h-9{height:2.25rem}.h-\[520px\]{height:520px}.min-h-\[88vh\]{min-height:88vh}.min-h-screen{min-height:100vh}.w-16{width:4rem}.w-20{width:5rem}.w-3\.5{width:0.875rem}.w-4{width:1rem}.w-5{width:1.25rem}.w-9{width:2.25rem}.w-\[520px\]{width:520px}.w-full{width:100%}.max-w-2xl{max-width:42rem}.max-w-3xl{max-width:48rem}.max-w-4xl{max-width:56rem}.max-w-5xl{max-width:64rem}.max-w-6xl{max-width:72rem}.max-w-lg{max-width:32rem}.max-w-md{max-width:28rem}.shrink-0{flex-shrink:0}.select-all{-webkit-user-select:all;user-select:all}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1{gap:0.25rem}.gap-1\.5{gap:0.375rem}.gap-2{gap:0.5rem}.gap-2\.5{gap:0.625rem}.gap-3{gap:0.75rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-2\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.625rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.625rem * var(--tw-space-y-reverse))}.space-y-3 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.75rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.space-y-8 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(2rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(2rem * var(--tw-space-y-reverse))}.space-y-1\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.375rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.375rem * var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.rounded-2xl{border-radius:1rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-xl{border-radius:0.75rem}.border{border-width:1px}.border-2{border-width:2px}.border-b{border-bottom-width:1px}.border-t{border-top-width:1px}.border-amber-100{--tw-border-opacity:1;border-color:rgb(254 243 199 / var(--tw-border-opacity, 1))}.border-amber-200{--tw-border-opacity:1;border-color:rgb(253 230 138 / var(--tw-border-opacity, 1))}.border-amber-200\/80{border-color:rgb(253 230 138 / 0.8)}.border-amber-300{--tw-border-opacity:1;border-color:rgb(252 211 77 / var(--tw-border-opacity, 1))}.border-amber-300\/40{border-color:rgb(252 211 77 / 0.4)}.border-amber-300\/70{border-color:rgb(252 211 77 / 0.7)}.border-amber-600{--tw-border-opacity:1;border-color:rgb(217 119 6 / var(--tw-border-opacity, 1))}.border-stone-200{--tw-border-opacity:1;border-color:rgb(231 229 228 / var(--tw-border-opacity, 1))}.border-stone-300{--tw-border-opacity:1;border-color:rgb(214 211 209 / var(--tw-border-opacity, 1))}.border-white{--tw-border-opacity:1;border-color:rgb(255 255 255 / var(--tw-border-opacity, 1))}.bg-\[\#0f1424\]{--tw-bg-opacity:1;background-color:rgb(15 20 36 / var(--tw-bg-opacity, 1))}.bg-\[\#1b6b4a\]{--tw-bg-opacity:1;background-color:rgb(27 107 74 / var(--tw-bg-opacity, 1))}.bg-\[\#2c1d11\]{--tw-bg-opacity:1;background-color:rgb(44 29 17 / var(--tw-bg-opacity, 1))}.bg-\[\#9e1b42\]{--tw-bg-opacity:1;background-color:rgb(158 27 66 / var(--tw-bg-opacity, 1))}.bg-\[\#b8860b\]{--tw-bg-opacity:1;background-color:rgb(184 134 11 / var(--tw-bg-opacity, 1))}.bg-\[\#c5a059\]{--tw-bg-opacity:1;background-color:rgb(197 160 89 / var(--tw-bg-opacity, 1))}.bg-\[\#d48c46\]{--tw-bg-opacity:1;background-color:rgb(212 140 70 / var(--tw-bg-opacity, 1))}.bg-\[\#d4af37\]{--tw-bg-opacity:1;background-color:rgb(212 175 55 / var(--tw-bg-opacity, 1))}.bg-amber-100{--tw-bg-opacity:1;background-color:rgb(254 243 199 / var(--tw-bg-opacity, 1))}.bg-amber-50{--tw-bg-opacity:1;background-color:rgb(255 251 235 / var(--tw-bg-opacity, 1))}.bg-amber-50\/70{background-color:rgb(255 251 235 / 0.7)}.bg-amber-50\/80{background-color:rgb(255 251 235 / 0.8)}.bg-amber-700{--tw-bg-opacity:1;background-color:rgb(180 83 9 / var(--tw-bg-opacity, 1))}.bg-amber-900{--tw-bg-opacity:1;background-color:rgb(120 53 15 / var(--tw-bg-opacity, 1))}.bg-amber-950\/50{background-color:rgb(69 26 3 / 0.5)}.bg-black\/25{background-color:rgb(0 0 0 / 0.25)}.bg-black\/30{background-color:rgb(0 0 0 / 0.3)}.bg-emerald-600{--tw-bg-opacity:1;background-color:rgb(5 150 105 / var(--tw-bg-opacity, 1))}.bg-stone-100{--tw-bg-opacity:1;background-color:rgb(245 245 244 / var(--tw-bg-opacity, 1))}.bg-stone-900{--tw-bg-opacity:1;background-color:rgb(28 25 23 / var(--tw-bg-opacity, 1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-stone-50\/70{background-color:rgb(250 250 249 / 0.7)}.bg-gradient-to-r{background-image:linear-gradient(to right, var(--tw-gradient-stops))}.from-amber-50{--tw-gradient-from:#fffbeb var(--tw-gradient-from-position);--tw-gradient-to:rgb(255 251 235 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.via-white{--tw-gradient-to:rgb(255 255 255 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), #fff var(--tw-gradient-via-position), var(--tw-gradient-to)}.to-amber-50{--tw-gradient-to:#fffbeb var(--tw-gradient-to-position)}.p-2{padding:0.5rem}.p-3{padding:0.75rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.p-8{padding:2rem}.p-3\.5{padding:0.875rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-3\.5{padding-left:0.875rem;padding-right:0.875rem}.px-4{padding-left:1rem;padding-right:1rem}.px-5{padding-left:1.25rem;padding-right:1.25rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.py-16{padding-top:4rem;padding-bottom:4rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-2\.5{padding-top:0.625rem;padding-bottom:0.625rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.py-4{padding-top:1rem;padding-bottom:1rem}.py-5{padding-top:1.25rem;padding-bottom:1.25rem}.py-8{padding-top:2rem;padding-bottom:2rem}.px-2\.5{padding-left:0.625rem;padding-right:0.625rem}.pb-20{padding-bottom:5rem}.pt-7{padding-top:1.75rem}.text-left{text-align:left}.text-center{text-align:center}.font-mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-medium{font-weight:500}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.italic{font-style:italic}.leading-relaxed{line-height:1.625}.leading-tight{line-height:1.25}.tracking-\[0\.25em\]{letter-spacing:0.25em}.tracking-\[0\.28em\]{letter-spacing:0.28em}.tracking-\[0\.2em\]{letter-spacing:0.2em}.tracking-\[0\.32em\]{letter-spacing:0.32em}.tracking-wider{letter-spacing:0.05em}.tracking-widest{letter-spacing:0.1em}.text-amber-100{--tw-text-opacity:1;color:rgb(254 243 199 / var(--tw-text-opacity, 1))}.text-amber-100\/80{color:rgb(254 243 199 / 0.8)}.text-amber-100\/90{color:rgb(254 243 199 / 0.9)}.text-amber-200{--tw-text-opacity:1;color:rgb(253 230 138 / var(--tw-text-opacity, 1))}.text-amber-200\/70{color:rgb(253 230 138 / 0.7)}.text-amber-200\/90{color:rgb(253 230 138 / 0.9)}.text-amber-300{--tw-text-opacity:1;color:rgb(252 211 77 / var(--tw-text-opacity, 1))}.text-amber-300\/10{color:rgb(252 211 77 / 0.1)}.text-amber-300\/80{color:rgb(252 211 77 / 0.8)}.text-amber-400{--tw-text-opacity:1;color:rgb(251 191 36 / var(--tw-text-opacity, 1))}.text-amber-400\/50{color:rgb(251 191 36 / 0.5)}.text-amber-50{--tw-text-opacity:1;color:rgb(255 251 235 / var(--tw-text-opacity, 1))}.text-amber-900{--tw-text-opacity:1;color:rgb(120 53 15 / var(--tw-text-opacity, 1))}.text-amber-950{--tw-text-opacity:1;color:rgb(69 26 3 / var(--tw-text-opacity, 1))}.text-stone-500{--tw-text-opacity:1;color:rgb(120 113 108 / var(--tw-text-opacity, 1))}.text-stone-600{--tw-text-opacity:1;color:rgb(87 83 78 / var(--tw-text-opacity, 1))}.text-stone-700{--tw-text-opacity:1;color:rgb(68 64 60 / var(--tw-text-opacity, 1))}.text-stone-900{--tw-text-opacity:1;color:rgb(28 25 23 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-rose-600{--tw-text-opacity:1;color:rgb(225 29 72 / var(--tw-text-opacity, 1))}.opacity-85{opacity:0.85}.shadow{--tw-shadow:0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-md{--tw-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-xl{--tw-shadow:0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.outline-none{outline:2px solid transparent;outline-offset:2px}.backdrop-blur-md{--tw-backdrop-blur:blur(12px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.backdrop-blur-sm{--tw-backdrop-blur:blur(4px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition{transition-property:color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.hover\:-translate-y-1:hover{--tw-translate-y:-0.25rem;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.hover\:border-emerald-300:hover{--tw-border-opacity:1;border-color:rgb(110 231 183 / var(--tw-border-opacity, 1))}.hover\:border-indigo-300:hover{--tw-border-opacity:1;border-color:rgb(165 180 252 / var(--tw-border-opacity, 1))}.hover\:border-rose-300:hover{--tw-border-opacity:1;border-color:rgb(253 164 175 / var(--tw-border-opacity, 1))}.hover\:bg-amber-100:hover{--tw-bg-opacity:1;background-color:rgb(254 243 199 / var(--tw-bg-opacity, 1))}.hover\:bg-amber-200:hover{--tw-bg-opacity:1;background-color:rgb(253 230 138 / var(--tw-bg-opacity, 1))}.hover\:bg-amber-950:hover{--tw-bg-opacity:1;background-color:rgb(69 26 3 / var(--tw-bg-opacity, 1))}.hover\:bg-emerald-700:hover{--tw-bg-opacity:1;background-color:rgb(4 120 87 / var(--tw-bg-opacity, 1))}.hover\:bg-stone-200:hover{--tw-bg-opacity:1;background-color:rgb(231 229 228 / var(--tw-bg-opacity, 1))}.hover\:bg-stone-800:hover{--tw-bg-opacity:1;background-color:rgb(41 37 36 / var(--tw-bg-opacity, 1))}.hover\:bg-rose-50:hover{--tw-bg-opacity:1;background-color:rgb(255 241 242 / var(--tw-bg-opacity, 1))}.hover\:opacity-90:hover{opacity:0.9}.hover\:opacity-95:hover{opacity:0.95}.focus\:border-amber-500:focus{--tw-border-opacity:1;border-color:rgb(245 158 11 / var(--tw-border-opacity, 1))}.focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}.focus\:ring-2:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)}.focus\:ring-amber-500:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(245 158 11 / var(--tw-ring-opacity, 1))}@media (min-width: 640px){.sm\:col-span-2{grid-column:span 2 / span 2}.sm\:col-span-1{grid-column:span 1 / span 1}.sm\:col-span-3{grid-column:span 3 / span 3}.sm\:block{display:block}.sm\:inline{display:inline}.sm\:h-\[700px\]{height:700px}.sm\:w-\[700px\]{width:700px}.sm\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.sm\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.sm\:grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}.sm\:grid-cols-12{grid-template-columns:repeat(12, minmax(0, 1fr))}.sm\:flex-row{flex-direction:row}.sm\:gap-6{gap:1.5rem}.sm\:gap-8{gap:2rem}.sm\:p-10{padding:2.5rem}.sm\:p-14{padding:3.5rem}.sm\:p-4{padding:1rem}.sm\:text-left{text-align:left}.sm\:text-4xl{font-size:2.25rem;line-height:2.5rem}.sm\:text-6xl{font-size:3.75rem;line-height:1}.sm\:text-base{font-size:1rem;line-height:1.5rem}.sm\:text-lg{font-size:1.125rem;line-height:1.75rem}.sm\:text-sm{font-size:0.875rem;line-height:1.25rem}.sm\:text-xl{font-size:1.25rem;line-height:1.75rem}}@media (min-width: 768px){.md\:inline{display:inline}.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.md\:text-7xl{font-size:4.5rem;line-height:1}}</style></head>
+<body class="min-h-screen theme-royal-gold">
+
+  <!-- Ambient Floating Petals & Golden Sparkles Canvas -->
+  <canvas id="particleCanvas" width="895" height="489"></canvas>
+
+  <!-- Grand Wax Seal & Curtain Opening Overlay (for Invite View) -->
+  <div id="curtainOverlay" class="">
+    <div class="curtain-door-left"></div>
+    <div class="curtain-door-right"></div>
+
+    <div class="seal-container text-center px-6 max-w-md mx-auto">
+      <div class="mb-6 flex justify-center">
+        <svg class="w-16 h-16 text-amber-300 opacity-85 float-gentle" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="32" cy="32" r="28" stroke-dasharray="3 3"></circle>
+          <path d="M32 8 C36 20, 44 28, 56 32 C44 36, 36 44, 32 56 C28 44, 20 36, 8 32 C20 28, 28 20, 32 8 Z"></path>
+        </svg>
+      </div>
+      <p class="uppercase tracking-[0.32em] text-xs text-amber-200/90 mb-3">A Royal Wedding Invitation</p>
+      <h2 id="curtainCoupleNames" class="font-serif-display text-3xl sm:text-4xl text-amber-50 mb-2">Partha &amp; Suchitra</h2>
+      <p id="curtainHostLine" class="text-sm text-amber-100/80 mb-8">Together with Family &amp; Friends</p>
+
+      <button id="openSealBtn" type="button" class="wax-seal-btn mx-auto text-amber-950 focus:outline-none">
+        <span id="sealMonogram" class="font-serif-display text-2xl font-bold tracking-wider">P &amp; S</span>
+        <span class="text-[10px] uppercase tracking-[0.2em] font-semibold mt-1">Tap to Open</span>
+      </button>
+
+      <p class="text-xs text-amber-200/70 mt-6">With celebratory music &amp; animations</p>
+    </div>
+  </div>
+
+  <!-- Top Navigation Bar -->
+  <header class="sticky top-0 z-40 backdrop-blur-md border-b hidden" style="background-color: rgba(255,255,255,0.86); border-color: rgba(212,175,55,0.35);">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-full flex items-center justify-center text-white shadow-sm" style="background: linear-gradient(135deg, var(--accent), var(--accent-dark));">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="sparkles" class="lucide lucide-sparkles w-4 h-4"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path><path d="M20 3v4"></path><path d="M22 5h-4"></path><path d="M4 17v2"></path><path d="M5 18H3"></path></svg>
+        </div>
+        <div>
+          <h1 class="font-serif-display font-bold text-base sm:text-lg text-stone-900 leading-tight">Royal Invite Studio</h1>
+          <p class="text-[11px] text-stone-500 hidden sm:block">Design, preview &amp; share your animated wedding link</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 flex-wrap">
+        <button id="modeEditBtn" type="button" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 bg-amber-700 text-white shadow-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="sliders-horizontal" class="lucide lucide-sliders-horizontal w-4 h-4"><line x1="21" x2="14" y1="4" y2="4"></line><line x1="10" x2="3" y1="4" y2="4"></line><line x1="21" x2="12" y1="12" y2="12"></line><line x1="8" x2="3" y1="12" y2="12"></line><line x1="21" x2="16" y1="20" y2="20"></line><line x1="12" x2="3" y1="20" y2="20"></line><line x1="14" x2="14" y1="2" y2="6"></line><line x1="8" x2="8" y1="10" y2="14"></line><line x1="16" x2="16" y1="18" y2="22"></line></svg>
+          <span>Customize Details</span>
+        </button>
+        <button id="modePreviewBtn" type="button" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 bg-stone-100 text-stone-700 hover:bg-stone-200">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="eye" class="lucide lucide-eye w-4 h-4"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          <span>Grand Preview</span>
+        </button>
+        <button id="replayEntranceBtn" type="button" class="px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition flex items-center gap-1.5 bg-amber-50 text-amber-900 border border-amber-300 hover:bg-amber-100" title="Play Grand Curtain Entrance">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="play" class="lucide lucide-play w-3.5 h-3.5"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg>
+          <span class="hidden md:inline">Replay Entrance</span>
+        </button>
+        <button id="musicToggleBtn" type="button" class="p-2 rounded-lg text-stone-700 bg-stone-100 hover:bg-stone-200 transition" title="Toggle Ambient Chime Music">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="volume-x" id="musicIcon" class="lucide lucide-volume-x lucide-volume-2 w-4 h-4"><path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"></path><line x1="22" x2="16" y1="9" y2="15"></line><line x1="16" x2="22" y1="9" y2="15"></line></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== SECTION 1: CUSTOMIZE / INPUT FORM ==================== -->
+  <main id="editorView" class="max-w-5xl mx-auto px-4 py-8 relative z-10 hidden">
+    <div class="bg-white rounded-2xl shadow-lg border border-amber-200/80 overflow-hidden">
+      <div class="px-6 py-5 border-b border-amber-100 bg-gradient-to-r from-amber-50 via-white to-amber-50 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h2 class="font-serif-display text-2xl font-bold text-stone-900">Enter Your Wedding Details</h2>
+          <p class="text-sm text-stone-600 mt-0.5">Fill in your names, events, and theme below. Your shareable link updates automatically.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="topCopyLinkBtn" type="button" class="px-4 py-2.5 rounded-xl text-sm font-semibold text-white shadow-md transition hover:opacity-95 flex items-center gap-2" style="background: linear-gradient(135deg, #b8860b, #855e04);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="link" class="lucide lucide-link w-4 h-4"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+            <span>Copy Shareable Link</span>
+          </button>
+        </div>
+      </div>
+
+      <form id="weddingForm" class="p-6 space-y-8">
+        <!-- Theme Selector -->
+        <section>
+          <label class="block text-xs font-bold uppercase tracking-wider text-amber-900 mb-3">1. Choose Grand Design Theme</label>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="themeSelectorGrid">
+            <button type="button" data-theme="theme-royal-gold" class="theme-opt p-3 rounded-xl border-2 border-amber-600 bg-amber-50/70 text-left transition">
+              <div class="flex items-center gap-2 mb-1.5">
+                <span class="w-5 h-5 rounded-full bg-[#b8860b] border border-white shadow"></span>
+                <span class="w-5 h-5 rounded-full bg-[#2c1d11] border border-white shadow"></span>
+              </div>
+              <p class="font-semibold text-sm text-stone-900">Royal Ivory &amp; Gold</p>
+              <p class="text-xs text-stone-500">Regal &amp; timeless</p>
+            </button>
+            <button type="button" data-theme="theme-udaipur-rose" class="theme-opt p-3 rounded-xl border-2 border-stone-200 bg-white hover:border-rose-300 text-left transition">
+              <div class="flex items-center gap-2 mb-1.5">
+                <span class="w-5 h-5 rounded-full bg-[#9e1b42] border border-white shadow"></span>
+                <span class="w-5 h-5 rounded-full bg-[#d48c46] border border-white shadow"></span>
+              </div>
+              <p class="font-semibold text-sm text-stone-900">Palace Rose &amp; Marigold</p>
+              <p class="text-xs text-stone-500">Festive &amp; vibrant</p>
+            </button>
+            <button type="button" data-theme="theme-midnight-gala" class="theme-opt p-3 rounded-xl border-2 border-stone-200 bg-white hover:border-indigo-300 text-left transition">
+              <div class="flex items-center gap-2 mb-1.5">
+                <span class="w-5 h-5 rounded-full bg-[#0f1424] border border-white shadow"></span>
+                <span class="w-5 h-5 rounded-full bg-[#d4af37] border border-white shadow"></span>
+              </div>
+              <p class="font-semibold text-sm text-stone-900">Midnight Starlight</p>
+              <p class="text-xs text-stone-500">Evening champagne</p>
+            </button>
+            <button type="button" data-theme="theme-emerald-pearl" class="theme-opt p-3 rounded-xl border-2 border-stone-200 bg-white hover:border-emerald-300 text-left transition">
+              <div class="flex items-center gap-2 mb-1.5">
+                <span class="w-5 h-5 rounded-full bg-[#1b6b4a] border border-white shadow"></span>
+                <span class="w-5 h-5 rounded-full bg-[#c5a059] border border-white shadow"></span>
+              </div>
+              <p class="font-semibold text-sm text-stone-900">Emerald &amp; Pearl</p>
+              <p class="text-xs text-stone-500">Garden elegance</p>
+            </button>
+          </div>
+        </section>
+
+        <!-- Couple & Family Info -->
+        <section>
+          <label class="block text-xs font-bold uppercase tracking-wider text-amber-900 mb-3">2. Couple &amp; Family Details</label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="partner1Input" class="block text-xs font-medium text-stone-700 mb-1">Partner 1 Name</label>
+              <input id="partner1Input" type="text" class="w-full px-3.5 py-2.5 rounded-lg border border-stone-300 text-stone-900 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none" value="Aarav Sharma">
+            </div>
+            <div>
+              <label for="partner2Input" class="block text-xs font-medium text-stone-700 mb-1">Partner 2 Name</label>
+              <input id="partner2Input" type="text" class="w-full px-3.5 py-2.5 rounded-lg border border-stone-300 text-stone-900 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none" value="Ananya Reddy">
+            </div>
+            <div>
+              <label for="hostLineInput" class="block text-xs font-medium text-stone-700 mb-1">Family / Host Line</label>
+              <input id="hostLineInput" type="text" class="w-full px-3.5 py-2.5 rounded-lg border border-stone-300 text-stone-900 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none" value="Together with the Sharma &amp; Reddy Families">
+            </div>
+            <div>
+              <label for="hashtagInput" class="block text-xs font-medium text-stone-700 mb-1">Wedding Hashtag (Optional)</label>
+              <input id="hashtagInput" type="text" class="w-full px-3.5 py-2.5 rounded-lg border border-stone-300 text-stone-900 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none" value="#AaravWedsAnanya">
+            </div>
+          </div>
+        </section>
+
+        <!-- Main Date, Time & Venue -->
+        <section>
+          <label class="block text-xs font-bold uppercase tracking-wider text-amber-900 mb-3">3. Main Wedding Date &amp; Venue</label>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label for="dateInput" class="block text-xs font-medium text-stone-700 mb-1">Wedding Date</label>
+              <input id="dateInput" type="date" class="w-full px-3.5 py-2.5 rounded-lg border border-stone-300 text-stone-900 focus:ring-2 focus:ring-amber-500 outline-none" value="2027-02-14">
+            </div>
+            <div>
+              <label for="timeInput" class="block text-xs font-medium text-stone-700 mb-1">Ceremony Time</label>
+              <input id="timeInput" type="time" class="w-full px-3.5 py-2.5 rounded-lg border border-stone-300 text-stone-900 focus:ring-2 focus:ring-amber-500 outline-none" value="18:30">
+            </div>
+            <div>
+              <label for="cityInput" class="block text-xs font-medium text-stone-700 mb-1">City / Region</label>
+              <input id="cityInput" type="text" class="w-full px-3.5 py-2.5 rounded-lg border border-stone-300 text-stone-900 focus:ring-2 focus:ring-amber-500 outline-none" value="Anantapur, Andhra Pradesh">
+            </div>
+            <div class="sm:col-span-2">
+              <label for="venueNameInput" class="block text-xs font-medium text-stone-700 mb-1">Venue Name &amp; Address</label>
+              <input id="venueNameInput" type="text" class="w-full px-3.5 py-2.5 rounded-lg border border-stone-300 text-stone-900 focus:ring-2 focus:ring-amber-500 outline-none" value="The Royal Heritage Palace &amp; Gardens, NH-44">
+            </div>
+            <div>
+              <label for="dressCodeInput" class="block text-xs font-medium text-stone-700 mb-1">Dress Code</label>
+              <input id="dressCodeInput" type="text" class="w-full px-3.5 py-2.5 rounded-lg border border-stone-300 text-stone-900 focus:ring-2 focus:ring-amber-500 outline-none" value="Traditional / Festive Ethnic">
+            </div>
+          </div>
+        </section>
+
+        <!-- Personal Welcome Message -->
+        <section>
+          <label for="messageInput" class="block text-xs font-bold uppercase tracking-wider text-amber-900 mb-2">4. Invitation Message to Family &amp; Friends</label>
+          <textarea id="messageInput" rows="3" class="w-full px-3.5 py-2.5 rounded-lg border border-stone-300 text-stone-900 focus:ring-2 focus:ring-amber-500 outline-none">With joyful hearts, we invite our beloved family and friends to bless us with your presence, laughter, and love as we begin our forever together.</textarea>
+        </section>
+
+        <!-- Multi-Event Schedule Builder -->
+        <section>
+          <div class="flex items-center justify-between mb-3">
+            <label class="block text-xs font-bold uppercase tracking-wider text-amber-900">5. Wedding Celebrations &amp; Events</label>
+            <button id="addEventBtn" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-100 text-amber-900 hover:bg-amber-200 transition flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="plus" class="lucide lucide-plus w-3.5 h-3.5"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+              <span>Add Event</span>
+            </button>
+          </div>
+          <div id="eventsBuilderList" class="space-y-3"><div class="p-3.5 rounded-xl border border-stone-200 bg-stone-50/70 grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-center">
+            <input type="text" data-ev-idx="0" data-ev-field="title" value="Grand Reception" placeholder="Event Name" class="sm:col-span-3 px-3 py-2 rounded-lg border border-stone-300 text-sm text-stone-900 bg-white">
+            <input type="text" data-ev-idx="0" data-ev-field="when" value="Nov 28, 2026 · 7:00 PM" placeholder="Date &amp; Time" class="sm:col-span-3 px-3 py-2 rounded-lg border border-stone-300 text-sm text-stone-900 bg-white">
+            <input type="text" data-ev-idx="0" data-ev-field="place" value="TTD Kalyana Mandapam" placeholder="Location" class="sm:col-span-3 px-3 py-2 rounded-lg border border-stone-300 text-sm text-stone-900 bg-white">
+            <input type="text" data-ev-idx="0" data-ev-field="note" value="Celebratory feast &amp; blessings" placeholder="Note / Attire" class="sm:col-span-2 px-3 py-2 rounded-lg border border-stone-300 text-sm text-stone-900 bg-white">
+            <button type="button" data-remove-ev="0" class="sm:col-span-1 p-2 rounded-lg text-rose-600 hover:bg-rose-50 transition flex justify-center" title="Remove Event">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="trash-2" class="lucide lucide-trash-2 w-4 h-4"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" x2="10" y1="11" y2="17"></line><line x1="14" x2="14" y1="11" y2="17"></line></svg>
+            </button>
+          </div><div class="p-3.5 rounded-xl border border-stone-200 bg-stone-50/70 grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-center">
+            <input type="text" data-ev-idx="1" data-ev-field="title" value="Muhurtham" placeholder="Event Name" class="sm:col-span-3 px-3 py-2 rounded-lg border border-stone-300 text-sm text-stone-900 bg-white">
+            <input type="text" data-ev-idx="1" data-ev-field="when" value="Sunday, 29th November, 2026 · 4:30 AM" placeholder="Date &amp; Time" class="sm:col-span-3 px-3 py-2 rounded-lg border border-stone-300 text-sm text-stone-900 bg-white">
+            <input type="text" data-ev-idx="1" data-ev-field="place" value="TTD Kalyana Mandapam" placeholder="Location" class="sm:col-span-3 px-3 py-2 rounded-lg border border-stone-300 text-sm text-stone-900 bg-white">
+            <input type="text" data-ev-idx="1" data-ev-field="note" value="Sacred wedding ceremony" placeholder="Note / Attire" class="sm:col-span-2 px-3 py-2 rounded-lg border border-stone-300 text-sm text-stone-900 bg-white">
+            <button type="button" data-remove-ev="1" class="sm:col-span-1 p-2 rounded-lg text-rose-600 hover:bg-rose-50 transition flex justify-center" title="Remove Event">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="trash-2" class="lucide lucide-trash-2 w-4 h-4"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" x2="10" y1="11" y2="17"></line><line x1="14" x2="14" y1="11" y2="17"></line></svg>
+            </button>
+          </div></div>
+        </section>
+
+        <!-- Shareable Link Box -->
+        <section class="bg-amber-50/80 border border-amber-200 rounded-xl p-5">
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+            <div>
+              <h3 class="font-serif-display font-bold text-lg text-stone-900">Your Shareable Invitation Link</h3>
+              <p class="text-xs text-stone-600">Send this link to family &amp; friends. Opening it launches the grand animated invitation directly.</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button id="launchPreviewBtn" type="button" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-stone-900 text-white hover:bg-stone-800 transition flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="sparkles" class="lucide lucide-sparkles w-4 h-4"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path><path d="M20 3v4"></path><path d="M22 5h-4"></path><path d="M4 17v2"></path><path d="M5 18H3"></path></svg>
+                <span>Preview Grand Invitation</span>
+              </button>
+              <button id="downloadGuestHtmlBtn" type="button" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-amber-900 text-amber-50 hover:bg-amber-950 transition flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="download" class="lucide lucide-download w-4 h-4"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" x2="12" y1="15" y2="3"></line></svg>
+                <span>Download Guest HTML</span>
+              </button>
+              <button id="copyLinkBtn" type="button" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold text-white transition flex items-center gap-1.5" style="background: linear-gradient(135deg, #b8860b, #855e04);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="copy" class="lucide lucide-copy w-4 h-4"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>
+                <span>Copy Link</span>
+              </button>
+              <a id="whatsappShareLink" href="https://wa.me/?text=You're%20warmly%20invited%20to%20the%20wedding%20of%20Partha%20Saradhi%20%26%20Suchitra!%20Open%20your%20grand%20animated%20invitation%20here%3A%20https%3A%2F%2F1229395816-atari-embeds.googleusercontent.com%2Fembeds%2F928209f300890cc864ba5f6dbbfbf517%2Finner-frame-minified.html%3Fjsh%3Dm%253B%252F_%252Fscs%252Fabc-static%252F_%252Fjs%252Fk%253Dgapi.lb.en.smUXTMp7CeY.O%252Fd%253D1%252Frs%253DAHpOoo_-UMASGI-dbLvJPxfO6N46l3l46A%252Fm%253D__features__%23invite%3DeyJ0aGVtZSI6InRoZW1lLXJveWFsLWdvbGQiLCJwYXJ0bmVyMSI6IlBhcnRoYSBTYXJhZGhpIiwicGFydG5lcjIiOiJTdWNoaXRyYSIsImhvc3RMaW5lIjoiVG9nZXRoZXIgd2l0aCBGYW1pbHkgJiBGcmllbmRzIiwiaGFzaHRhZyI6IiNQYXJ0aGFXZWRzU3VjaGkiLCJkYXRlIjoiMjAyNi0xMS0yOSIsInRpbWUiOiIwNDozMCIsImNpdHkiOiJTYW50aGlwdXJhbSwgS3VwcGFtIE1haW4gUm9hZCwgQW5kaHJhIFByYWRlc2giLCJ2ZW51ZU5hbWUiOiJULlQuRCBLYWx5YW5hIE1hbmRhcGFtLCBTaGFudGhpcHVyYW0iLCJkcmVzc0NvZGUiOiJUcmFkaXRpb25hbCAvIEZlc3RpdmUgRXRobmljIiwibWVzc2FnZSI6IldpdGggam95ZnVsIGhlYXJ0cywgd2UgaW52aXRlIG91ciBiZWxvdmVkIGZhbWlseSBhbmQgZnJpZW5kcyB0byBibGVzcyB1cyB3aXRoIHlvdXIgcHJlc2VuY2UsIGxhdWdodGVyLCBhbmQgbG92ZSBhcyB3ZSBiZWdpbiBvdXIgZm9yZXZlciB0b2dldGhlci4iLCJldmVudHMiOlt7InRpdGxlIjoiR3JhbmQgUmVjZXB0aW9uIiwid2hlbiI6Ik5vdiAyOCwgMjAyNiDCtyA3OjAwIFBNIiwicGxhY2UiOiJUVEQgS2FseWFuYSBNYW5kYXBhbSIsIm5vdGUiOiJDZWxlYnJhdG9yeSBmZWFzdCAmIGJsZXNzaW5ncyJ9LHsidGl0bGUiOiJNdWh1cnRoYW0iLCJ3aGVuIjoiU3VuZGF5LCAyOXRoIE5vdmVtYmVyLCAyMDI2IMK3IDQ6MzAgQU0iLCJwbGFjZSI6IlRURCBLYWx5YW5hIE1hbmRhcGFtIiwibm90ZSI6IlNhY3JlZCB3ZWRkaW5nIGNlcmVtb255In1dfQ%253D%253D" target="_blank" rel="noopener noreferrer" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-700 transition flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="send" class="lucide lucide-send w-4 h-4"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"></path><path d="m21.854 2.147-10.94 10.939"></path></svg>
+                <span>WhatsApp</span>
+              </a>
+            </div>
+          </div>
+          <input id="shareUrlOutput" type="text" readonly="" class="w-full px-3 py-2 rounded-lg bg-white border border-amber-300 text-xs text-stone-700 font-mono select-all">
+        </section>
+      </form>
+    </div>
+  </main>
+
+  <!-- ==================== SECTION 2: GRAND ANIMATED INVITATION ==================== -->
+  <main id="inviteView" class="relative z-10 pb-20">
+
+    <!-- Hero Section -->
+    <section class="relative min-h-[88vh] flex items-center justify-center px-4 py-16 text-center overflow-hidden" style="background: radial-gradient(circle at top, var(--hero-grad-2) 0%, var(--hero-grad-1) 100%);">
+      <!-- Rotating Subtle Mandala SVG -->
+      <svg class="mandala-spin absolute w-[520px] h-[520px] sm:w-[700px] sm:h-[700px] text-amber-300/10 pointer-events-none" viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="0.6">
+        <circle cx="100" cy="100" r="95" stroke-dasharray="4 4"></circle>
+        <circle cx="100" cy="100" r="78"></circle>
+        <circle cx="100" cy="100" r="60" stroke-dasharray="2 3"></circle>
+        <polygon points="100,8 125,75 192,100 125,125 100,192 75,125 8,100 75,75"></polygon>
+        <polygon points="100,22 118,82 178,100 118,118 100,178 82,118 22,100 82,82" transform="rotate(45 100 100)"></polygon>
+      </svg>
+
+      <!-- Ornate Inner Frame -->
+      <div class="relative z-10 max-w-3xl w-full mx-auto p-8 sm:p-14 rounded-2xl ornate-frame bg-black/25 backdrop-blur-sm">
+        <p id="dispHostLine" class="uppercase tracking-[0.28em] text-xs sm:text-sm text-amber-200/90 mb-5">Together with Family &amp; Friends</p>
+
+        <!-- Couple Monogram Crest -->
+        <div class="w-20 h-20 mx-auto mb-6 rounded-full border-2 border-amber-300/70 flex items-center justify-center bg-amber-950/50 shadow-lg float-gentle">
+          <span id="dispMonogram" class="font-serif-display text-2xl font-bold text-amber-200">P &amp; S</span>
+        </div>
+
+        <h2 id="dispCoupleNames" class="font-serif-display text-4xl sm:text-6xl md:text-7xl font-bold gold-shimmer leading-tight mb-4">Partha Saradhi &amp; Suchitra</h2>
+
+        <p class="text-amber-100/90 text-sm sm:text-base tracking-widest uppercase mb-8">Request the honour of your presence at their wedding</p>
+
+        <div class="inline-flex flex-wrap items-center justify-center gap-4 sm:gap-8 px-6 py-4 rounded-xl border border-amber-300/40 bg-black/30 text-amber-100">
+          <div class="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="calendar-heart" class="lucide lucide-calendar-heart w-5 h-5 text-amber-300"><path d="M3 10h18V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7"></path><path d="M8 2v4"></path><path d="M16 2v4"></path><path d="M21.29 14.7a2.43 2.43 0 0 0-2.65-.52c-.3.12-.57.3-.8.53l-.34.34-.35-.34a2.43 2.43 0 0 0-2.65-.53c-.3.12-.56.3-.79.53-.95.94-1 2.53.2 3.74L17.5 22l3.6-3.55c1.2-1.21 1.14-2.8.19-3.74Z"></path></svg>
+            <span id="dispDateText" class="font-serif-display text-base sm:text-lg font-semibold">Sunday, November 29, 2026</span>
+          </div>
+          <span class="hidden sm:inline text-amber-400/50">|</span>
+          <div class="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="clock" class="lucide lucide-clock w-5 h-5 text-amber-300"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span id="dispTimeText" class="font-serif-display text-base sm:text-lg font-semibold">4:30 AM</span>
+          </div>
+          <span class="hidden sm:inline text-amber-400/50">|</span>
+          <div class="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="map-pin" class="lucide lucide-map-pin w-5 h-5 text-amber-300"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            <span id="dispCityText" class="font-serif-display text-base sm:text-lg font-semibold">Santhipuram, Kuppam Main Road, Andhra Pradesh</span>
+          </div>
+        </div>
+
+        <p id="dispHashtag" class="mt-6 text-xs tracking-[0.25em] uppercase text-amber-300/80">#ParthaWedsSuchi</p>
+      </div>
+    </section>
+
+    <!-- Countdown & Welcome Message -->
+    <section class="max-w-4xl mx-auto px-4 -mt-10 relative z-20 reveal-section">
+      <div class="ornate-card rounded-2xl p-6 sm:p-10 text-center">
+        <p class="text-xs uppercase tracking-[0.25em] font-bold mb-4" style="color: var(--accent);">Counting Down to Forever</p>
+        <div class="grid grid-cols-4 gap-3 sm:gap-6 max-w-lg mx-auto mb-8">
+          <div class="p-3 sm:p-4 rounded-xl" style="background-color: var(--bg-secondary);">
+            <div id="cdDays" class="font-serif-display text-2xl sm:text-4xl font-bold" style="color: var(--accent);">04</div>
+            <div class="text-[11px] uppercase tracking-wider mt-1" style="color: var(--text-secondary);">Days</div>
+          </div>
+          <div class="p-3 sm:p-4 rounded-xl" style="background-color: var(--bg-secondary);">
+            <div id="cdHours" class="font-serif-display text-2xl sm:text-4xl font-bold" style="color: var(--accent);">11</div>
+            <div class="text-[11px] uppercase tracking-wider mt-1" style="color: var(--text-secondary);">Hours</div>
+          </div>
+          <div class="p-3 sm:p-4 rounded-xl" style="background-color: var(--bg-secondary);">
+            <div id="cdMins" class="font-serif-display text-2xl sm:text-4xl font-bold" style="color: var(--accent);">52</div>
+            <div class="text-[11px] uppercase tracking-wider mt-1" style="color: var(--text-secondary);">Minutes</div>
+          </div>
+          <div class="p-3 sm:p-4 rounded-xl" style="background-color: var(--bg-secondary);">
+            <div id="cdSecs" class="font-serif-display text-2xl sm:text-4xl font-bold" style="color: var(--accent);">57</div>
+            <div class="text-[11px] uppercase tracking-wider mt-1" style="color: var(--text-secondary);">Seconds</div>
+          </div>
+        </div>
+
+        <div class="max-w-2xl mx-auto border-t pt-7" style="border-color: rgba(212,175,55,0.3);">
+          <p id="dispMessage" class="font-serif-display text-lg sm:text-xl italic leading-relaxed" style="color: var(--text-primary);">"With joyful hearts, we invite our beloved family and friends to bless us with your presence, laughter, and love as we begin our forever together."</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Wedding Events Timeline -->
+    <section class="max-w-5xl mx-auto px-4 mt-14 reveal-section">
+      <div class="text-center mb-8">
+        <p class="text-xs uppercase tracking-[0.25em] font-bold mb-2" style="color: var(--accent);">The Celebrations</p>
+        <h3 class="font-serif-display text-3xl sm:text-4xl font-bold">Wedding Itinerary</h3>
+      </div>
+      <div id="dispEventsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6"><div class="ornate-card rounded-2xl p-6 transition hover:-translate-y-1">
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <span class="text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded-full" style="background-color: var(--bg-secondary); color: var(--accent-dark);">Event 01</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="sparkles" class="lucide lucide-sparkles w-4 h-4" style="color: var(--accent);"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path><path d="M20 3v4"></path><path d="M22 5h-4"></path><path d="M4 17v2"></path><path d="M5 18H3"></path></svg>
+            </div>
+            <h4 class="font-serif-display text-2xl font-bold mb-2">Grand Reception</h4>
+            <div class="space-y-1.5 text-sm" style="color: var(--text-secondary);">
+              <p class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="clock" class="lucide lucide-clock w-4 h-4" style="color: var(--accent);"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><span>Nov 28, 2026 · 7:00 PM</span></p>
+              <p class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="map-pin" class="lucide lucide-map-pin w-4 h-4" style="color: var(--accent);"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg><span>TTD Kalyana Mandapam</span></p>
+              <p class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="info" class="lucide lucide-info w-4 h-4" style="color: var(--accent);"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg><span>Celebratory feast &amp; blessings</span></p>
+            </div>
+          </div><div class="ornate-card rounded-2xl p-6 transition hover:-translate-y-1">
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <span class="text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded-full" style="background-color: var(--bg-secondary); color: var(--accent-dark);">Event 02</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="sparkles" class="lucide lucide-sparkles w-4 h-4" style="color: var(--accent);"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path><path d="M20 3v4"></path><path d="M22 5h-4"></path><path d="M4 17v2"></path><path d="M5 18H3"></path></svg>
+            </div>
+            <h4 class="font-serif-display text-2xl font-bold mb-2">Muhurtham</h4>
+            <div class="space-y-1.5 text-sm" style="color: var(--text-secondary);">
+              <p class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="clock" class="lucide lucide-clock w-4 h-4" style="color: var(--accent);"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><span>Sunday, 29th November, 2026 · 4:30 AM</span></p>
+              <p class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="map-pin" class="lucide lucide-map-pin w-4 h-4" style="color: var(--accent);"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg><span>TTD Kalyana Mandapam</span></p>
+              <p class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="info" class="lucide lucide-info w-4 h-4" style="color: var(--accent);"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg><span>Sacred wedding ceremony</span></p>
+            </div>
+          </div></div>
+    </section>
+
+    <!-- Venue & Dress Code Card -->
+    <section class="max-w-4xl mx-auto px-4 mt-14 reveal-section">
+      <div class="ornate-card rounded-2xl p-6 sm:p-10 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div class="text-center sm:text-left">
+          <p class="text-xs uppercase tracking-[0.25em] font-bold mb-2" style="color: var(--accent);">Venue &amp; Attire</p>
+          <h3 id="dispVenueName" class="font-serif-display text-2xl font-bold mb-2">T.T.D Kalyana Mandapam, Shanthipuram</h3>
+          <p id="dispVenueCity" class="text-sm mb-3" style="color: var(--text-secondary);">Santhipuram, Kuppam Main Road, Andhra Pradesh</p>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold" style="background-color: var(--bg-secondary); color: var(--accent-dark);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="shirt" class="lucide lucide-shirt w-3.5 h-3.5"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"></path></svg>
+            <span id="dispDressCode">Dress Code: Traditional / Festive Ethnic</span>
+          </span>
+        </div>
+        <a id="mapsLinkBtn" href="https://maps.google.com/?q=T.T.D%20Kalyana%20Mandapam%2C%20Shanthipuram%20Santhipuram%2C%20Kuppam%20Main%20Road%2C%20Andhra%20Pradesh" target="_blank" rel="noopener noreferrer" class="px-5 py-3 rounded-xl font-semibold text-sm text-white shadow-md transition hover:opacity-90 flex items-center gap-2 shrink-0" style="background: linear-gradient(135deg, var(--accent), var(--accent-dark));">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="navigation" class="lucide lucide-navigation w-4 h-4"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
+          <span>Open in Google Maps</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Interactive RSVP Section -->
+    <section class="max-w-3xl mx-auto px-4 mt-14 reveal-section">
+      <div class="ornate-card rounded-2xl p-6 sm:p-10">
+        <div class="text-center mb-6">
+          <p class="text-xs uppercase tracking-[0.25em] font-bold mb-2" style="color: var(--accent);">Kindly Respond</p>
+          <h3 class="font-serif-display text-3xl font-bold">RSVP &amp; Blessings</h3>
+          <p class="text-sm mt-1" style="color: var(--text-secondary);">Let us know you're coming so we can welcome you warmly.</p>
+        </div>
+
+        <form id="rsvpForm" class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="rsvpName" class="block text-xs font-semibold mb-1">Your Full Name</label>
+              <input id="rsvpName" type="text" required="" placeholder="e.g., Priya &amp; Karthik" class="w-full px-3.5 py-2.5 rounded-lg border border-stone-300 text-stone-900 bg-white focus:ring-2 focus:ring-amber-500 outline-none">
+            </div>
+            <div>
+              <label for="rsvpGuests" class="block text-xs font-semibold mb-1">Number of Guests</label>
+              <select id="rsvpGuests" class="w-full px-3.5 py-2.5 rounded-lg border border-stone-300 text-stone-900 bg-white focus:ring-2 focus:ring-amber-500 outline-none">
+                <option value="1">1 Guest</option>
+                <option value="2" selected="">2 Guests</option>
+                <option value="3">3 Guests</option>
+                <option value="4">4 Guests</option>
+                <option value="5+">5+ Family Members</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label for="rsvpStatus" class="block text-xs font-semibold mb-1">Attendance</label>
+            <select id="rsvpStatus" class="w-full px-3.5 py-2.5 rounded-lg border border-stone-300 text-stone-900 bg-white focus:ring-2 focus:ring-amber-500 outline-none">
+              <option value="Joyfully Attending">Joyfully Attending</option>
+              <option value="Attending Reception Only">Attending Reception Only</option>
+              <option value="Sending Warm Blessings">Unable to Attend — Sending Warm Blessings</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="rsvpWish" class="block text-xs font-semibold mb-1">Blessings or Note for the Couple</label>
+            <textarea id="rsvpWish" rows="2" placeholder="Wishing you a lifetime of happiness..." class="w-full px-3.5 py-2.5 rounded-lg border border-stone-300 text-stone-900 bg-white focus:ring-2 focus:ring-amber-500 outline-none"></textarea>
+          </div>
+
+          <button type="submit" class="w-full py-3 rounded-xl font-semibold text-white shadow-md transition hover:opacity-95 flex items-center justify-center gap-2" style="background: linear-gradient(135deg, var(--accent), var(--accent-dark));">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="heart-handshake" class="lucide lucide-heart-handshake w-5 h-5"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path><path d="M12 5 9.04 7.96a2.17 2.17 0 0 0 0 3.08c.82.82 2.13.85 3 .07l2.07-1.9a2.82 2.82 0 0 1 3.79 0l2.96 2.66"></path><path d="m18 15-2-2"></path><path d="m15 18-2-2"></path></svg>
+            <span>Send RSVP &amp; Blessings</span>
+          </button>
+        </form>
+
+        <div id="rsvpWall" class="mt-6 space-y-2.5 hidden">
+          <p class="text-xs font-bold uppercase tracking-wider" style="color: var(--accent);">Recent Guest Blessings</p>
+          <div id="rsvpList" class="space-y-2"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Guest Footer Share Bar -->
+    <section class="max-w-3xl mx-auto px-4 mt-10 text-center">
+      <button id="previewCopyLinkBtn" type="button" class="px-5 py-2.5 rounded-xl text-sm font-semibold border transition inline-flex items-center gap-2" style="border-color: var(--border-ornate); color: var(--text-primary); background-color: var(--bg-card);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="share-2" class="lucide lucide-share-2 w-4 h-4"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"></line><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"></line></svg>
+        <span>Copy Invitation Link</span>
+      </button>
+    </section>
+  </main>
+
+  <!-- Toast Notification -->
+  <div id="toastBanner" class="toast-banner px-5 py-3 rounded-xl bg-stone-900 text-amber-100 text-sm font-medium shadow-xl flex items-center gap-2">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="check-circle-2" class="lucide lucide-check-circle-2 w-4 h-4 text-amber-400"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>
+    <span id="toastText">Shareable invitation link copied!</span>
+  </div>
+
+  <script>
+    (function () {
+      const STORAGE_KEY = 'royal_wedding_invite_state_v1';
+      const RSVP_KEY = 'royal_wedding_invite_rsvps_v1';
+
+      const defaultState = {
+        theme: 'theme-royal-gold',
+        partner1: 'Partha Saradhi',
+        partner2: 'Suchitra',
+        hostLine: 'Together with Family & Friends',
+        hashtag: '#ParthaWedsSuchi',
+        date: '2026-11-29',
+        time: '04:30',
+        city: 'Santhipuram, Kuppam Main Road, Andhra Pradesh',
+        venueName: 'T.T.D Kalyana Mandapam, Shanthipuram',
+        dressCode: 'Traditional / Festive Ethnic',
+        message: 'With joyful hearts, we invite our beloved family and friends to bless us with your presence, laughter, and love as we begin our forever together.',
+        events: [
+          { title: 'Grand Reception', when: 'Nov 28, 2026 · 7:00 PM', place: 'TTD Kalyana Mandapam', note: 'Celebratory feast & blessings' },
+          { title: 'Muhurtham', when: 'Sunday, 29th November, 2026 · 4:30 AM', place: 'TTD Kalyana Mandapam', note: 'Sacred wedding ceremony' }
+        ]
+      };
+
+      let state = JSON.parse(JSON.stringify(defaultState));
+      let rsvps = [];
+      let isPreviewMode = false;
+      let musicPlaying = false;
+      let musicTimer = null;
+      let audioCtx = null;
+
+      // DOM References
+      const editorView = document.getElementById('editorView');
+      const inviteView = document.getElementById('inviteView');
+      const curtainOverlay = document.getElementById('curtainOverlay');
+      const modeEditBtn = document.getElementById('modeEditBtn');
+      const modePreviewBtn = document.getElementById('modePreviewBtn');
+      const replayEntranceBtn = document.getElementById('replayEntranceBtn');
+      const musicToggleBtn = document.getElementById('musicToggleBtn');
+      const openSealBtn = document.getElementById('openSealBtn');
+      const eventsBuilderList = document.getElementById('eventsBuilderList');
+      const addEventBtn = document.getElementById('addEventBtn');
+      const shareUrlOutput = document.getElementById('shareUrlOutput');
+      const whatsappShareLink = document.getElementById('whatsappShareLink');
+
+      // Encode / Decode state for shareable URL hash
+      function encodeStateToHash(obj) {
+        try {
+          const json = JSON.stringify(obj);
+          const bytes = new TextEncoder().encode(json);
+          let bin = '';
+          bytes.forEach((b) => { bin += String.fromCharCode(b); });
+          return '#invite=' + encodeURIComponent(btoa(bin));
+        } catch (e) {
+          return '';
+        }
+      }
+
+      function decodeStateFromHash(hashStr) {
+        try {
+          if (!hashStr || !hashStr.startsWith('#invite=')) return null;
+          const b64 = decodeURIComponent(hashStr.slice(8));
+          const bin = atob(b64);
+          const bytes = new Uint8Array(bin.length);
+          for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+          const json = new TextDecoder().decode(bytes);
+          return JSON.parse(json);
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function saveLocal() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {}
+      }
+
+      function loadInitialState() {
+        const fromHash = decodeStateFromHash(window.location.hash);
+        if (fromHash && fromHash.partner1) {
+          state = Object.assign({}, defaultState, fromHash);
+          isPreviewMode = true;
+          showCurtainEntrance();
+        } else {
+          try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+              state = Object.assign({}, defaultState, JSON.parse(saved));
+            }
+          } catch (e) {}
+        }
+        try {
+          const savedRsvps = localStorage.getItem(RSVP_KEY);
+          if (savedRsvps) rsvps = JSON.parse(savedRsvps);
+        } catch (e) {}
+      }
+
+      function showToast(msg) {
+        const toast = document.getElementById('toastBanner');
+        document.getElementById('toastText').textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2600);
+      }
+
+      function copyShareLink() {
+        const url = shareUrlOutput.value;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(() => {
+            showToast('Shareable invitation link copied!');
+          }).catch(() => fallbackCopy(url));
+        } else {
+          fallbackCopy(url);
+        }
+      }
+
+      function fallbackCopy(text) {
+        const temp = document.createElement('textarea');
+        temp.value = text;
+        document.body.appendChild(temp);
+        temp.select();
+        try {
+          document.execCommand('copy');
+          showToast('Shareable invitation link copied!');
+        } catch (e) {
+          showToast('Copy the link from the box above.');
+        }
+        document.body.removeChild(temp);
+      }
+
+      function getInitials(name1, name2) {
+        const c1 = (name1 || 'A').trim().charAt(0).toUpperCase();
+        const c2 = (name2 || 'A').trim().charAt(0).toUpperCase();
+        return c1 + ' & ' + c2;
+      }
+
+      function formatDisplayDate(dateStr) {
+        if (!dateStr) return 'Date To Be Announced';
+        const parts = dateStr.split('-').map(Number);
+        if (parts.length !== 3) return dateStr;
+        const d = new Date(parts[0], parts[1] - 1, parts[2]);
+        return d.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      }
+
+      function formatDisplayTime(timeStr) {
+        if (!timeStr) return 'Evening';
+        const [h, m] = timeStr.split(':').map(Number);
+        if (isNaN(h)) return timeStr;
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        const h12 = h % 12 || 12;
+        return h12 + ':' + String(m || 0).padStart(2, '0') + ' ' + ampm;
+      }
+
+      function applyTheme(themeClass) {
+        document.body.classList.remove('theme-royal-gold', 'theme-udaipur-rose', 'theme-midnight-gala', 'theme-emerald-pearl');
+        document.body.classList.add(themeClass || 'theme-royal-gold');
+        document.querySelectorAll('.theme-opt').forEach((btn) => {
+          if (btn.dataset.theme === themeClass) {
+            btn.classList.add('border-amber-600', 'bg-amber-50/70');
+            btn.classList.remove('border-stone-200', 'bg-white');
+          } else {
+            btn.classList.remove('border-amber-600', 'bg-amber-50/70');
+            btn.classList.add('border-stone-200', 'bg-white');
+          }
+        });
+      }
+
+      function populateFormFromState() {
+        document.getElementById('partner1Input').value = state.partner1 || '';
+        document.getElementById('partner2Input').value = state.partner2 || '';
+        document.getElementById('hostLineInput').value = state.hostLine || '';
+        document.getElementById('hashtagInput').value = state.hashtag || '';
+        document.getElementById('dateInput').value = state.date || '';
+        document.getElementById('timeInput').value = state.time || '';
+        document.getElementById('cityInput').value = state.city || '';
+        document.getElementById('venueNameInput').value = state.venueName || '';
+        document.getElementById('dressCodeInput').value = state.dressCode || '';
+        document.getElementById('messageInput').value = state.message || '';
+        renderEventsBuilder();
+      }
+
+      function renderEventsBuilder() {
+        eventsBuilderList.innerHTML = '';
+        state.events.forEach((ev, idx) => {
+          const row = document.createElement('div');
+          row.className = 'p-3.5 rounded-xl border border-stone-200 bg-stone-50/70 grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-center';
+          row.innerHTML = `
+            <input type="text" data-ev-idx="${idx}" data-ev-field="title" value="${escapeHtml(ev.title)}" placeholder="Event Name" class="sm:col-span-3 px-3 py-2 rounded-lg border border-stone-300 text-sm text-stone-900 bg-white" />
+            <input type="text" data-ev-idx="${idx}" data-ev-field="when" value="${escapeHtml(ev.when)}" placeholder="Date & Time" class="sm:col-span-3 px-3 py-2 rounded-lg border border-stone-300 text-sm text-stone-900 bg-white" />
+            <input type="text" data-ev-idx="${idx}" data-ev-field="place" value="${escapeHtml(ev.place)}" placeholder="Location" class="sm:col-span-3 px-3 py-2 rounded-lg border border-stone-300 text-sm text-stone-900 bg-white" />
+            <input type="text" data-ev-idx="${idx}" data-ev-field="note" value="${escapeHtml(ev.note)}" placeholder="Note / Attire" class="sm:col-span-2 px-3 py-2 rounded-lg border border-stone-300 text-sm text-stone-900 bg-white" />
+            <button type="button" data-remove-ev="${idx}" class="sm:col-span-1 p-2 rounded-lg text-rose-600 hover:bg-rose-50 transition flex justify-center" title="Remove Event">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          `;
+          eventsBuilderList.appendChild(row);
+        });
+        if (window.lucide) lucide.createIcons();
+      }
+
+      function escapeHtml(str) {
+        return String(str || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function renderInvitation() {
+        applyTheme(state.theme);
+
+        const p1 = state.partner1.trim() || 'Partner 1';
+        const p2 = state.partner2.trim() || 'Partner 2';
+        const coupleDisplay = p1.split(' ')[0] + ' & ' + p2.split(' ')[0];
+        const fullNames = p1 + ' & ' + p2;
+        const initials = getInitials(p1, p2);
+
+        document.getElementById('curtainCoupleNames').textContent = coupleDisplay;
+        document.getElementById('curtainHostLine').textContent = state.hostLine || 'Cordially invite you to celebrate their union';
+        document.getElementById('sealMonogram').textContent = initials;
+
+        document.getElementById('dispHostLine').textContent = state.hostLine;
+        document.getElementById('dispMonogram').textContent = initials;
+        document.getElementById('dispCoupleNames').textContent = fullNames;
+        document.getElementById('dispDateText').textContent = formatDisplayDate(state.date);
+        document.getElementById('dispTimeText').textContent = formatDisplayTime(state.time);
+        document.getElementById('dispCityText').textContent = state.city;
+        document.getElementById('dispHashtag').textContent = state.hashtag;
+        document.getElementById('dispMessage').textContent = '"' + state.message + '"';
+        document.getElementById('dispVenueName').textContent = state.venueName;
+        document.getElementById('dispVenueCity').textContent = state.city;
+        document.getElementById('dispDressCode').textContent = 'Dress Code: ' + (state.dressCode || 'Festive');
+
+        const mapQuery = encodeURIComponent((state.venueName || '') + ' ' + (state.city || ''));
+        document.getElementById('mapsLinkBtn').href = 'https://maps.google.com/?q=' + mapQuery;
+
+        const grid = document.getElementById('dispEventsGrid');
+        grid.innerHTML = '';
+        state.events.forEach((ev, i) => {
+          const card = document.createElement('div');
+          card.className = 'ornate-card rounded-2xl p-6 transition hover:-translate-y-1';
+          card.innerHTML = `
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <span class="text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded-full" style="background-color: var(--bg-secondary); color: var(--accent-dark);">Event 0${i + 1}</span>
+              <i data-lucide="sparkles" class="w-4 h-4" style="color: var(--accent);"></i>
+            </div>
+            <h4 class="font-serif-display text-2xl font-bold mb-2">${escapeHtml(ev.title)}</h4>
+            <div class="space-y-1.5 text-sm" style="color: var(--text-secondary);">
+              <p class="flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4" style="color: var(--accent);"></i><span>${escapeHtml(ev.when)}</span></p>
+              <p class="flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4" style="color: var(--accent);"></i><span>${escapeHtml(ev.place)}</span></p>
+              ${ev.note ? `<p class="flex items-center gap-2"><i data-lucide="info" class="w-4 h-4" style="color: var(--accent);"></i><span>${escapeHtml(ev.note)}</span></p>` : ''}
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+
+        // Update Shareable URL
+        const base = window.location.href.split('#')[0];
+        const fullUrl = base + encodeStateToHash(state);
+        shareUrlOutput.value = fullUrl;
+        const waMsg = encodeURIComponent(`You're warmly invited to the wedding of ${fullNames}! Open your grand animated invitation here: ${fullUrl}`);
+        whatsappShareLink.href = `https://wa.me/?text=${waMsg}`;
+
+        renderRsvpWall();
+        if (window.lucide) lucide.createIcons();
+      }
+
+      function renderRsvpWall() {
+        const wall = document.getElementById('rsvpWall');
+        const list = document.getElementById('rsvpList');
+        if (!rsvps.length) {
+          wall.classList.add('hidden');
+          return;
+        }
+        wall.classList.remove('hidden');
+        list.innerHTML = '';
+        rsvps.slice(0, 6).forEach((item) => {
+          const el = document.createElement('div');
+          el.className = 'p-3 rounded-xl border text-sm';
+          el.style.borderColor = 'rgba(212,175,55,0.35)';
+          el.style.backgroundColor = 'var(--bg-secondary)';
+          el.innerHTML = `
+            <div class="flex items-center justify-between font-semibold">
+              <span>${escapeHtml(item.name)} (${escapeHtml(item.guests)} Guests)</span>
+              <span class="text-xs px-2 py-0.5 rounded-full bg-white/70 text-stone-800">${escapeHtml(item.status)}</span>
+            </div>
+            ${item.wish ? `<p class="text-xs mt-1 italic opacity-85">"${escapeHtml(item.wish)}"</p>` : ''}
+          `;
+          list.appendChild(el);
+        });
+      }
+
+      function setMode(preview) {
+        isPreviewMode = preview;
+        if (preview) {
+          editorView.classList.add('hidden');
+          inviteView.classList.remove('hidden');
+          modePreviewBtn.classList.add('bg-amber-700', 'text-white', 'shadow-sm');
+          modePreviewBtn.classList.remove('bg-stone-100', 'text-stone-700');
+          modeEditBtn.classList.remove('bg-amber-700', 'text-white', 'shadow-sm');
+          modeEditBtn.classList.add('bg-stone-100', 'text-stone-700');
+          triggerRevealSections();
+        } else {
+          inviteView.classList.add('hidden');
+          editorView.classList.remove('hidden');
+          modeEditBtn.classList.add('bg-amber-700', 'text-white', 'shadow-sm');
+          modeEditBtn.classList.remove('bg-stone-100', 'text-stone-700');
+          modePreviewBtn.classList.remove('bg-amber-700', 'text-white', 'shadow-sm');
+          modePreviewBtn.classList.add('bg-stone-100', 'text-stone-700');
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function showCurtainEntrance() {
+        curtainOverlay.classList.remove('hidden', 'opening', 'opened');
+      }
+
+      function openCurtain() {
+        curtainOverlay.classList.add('opening');
+        if (typeof confetti === 'function') {
+          confetti({
+            particleCount: 90,
+            spread: 80,
+            origin: { y: 0.55 },
+            colors: ['#d4af37', '#f7e49c', '#9e1b42', '#ffffff']
+          });
+        }
+        if (!musicPlaying) {
+          startAmbientChime();
+        }
+        setTimeout(() => {
+          curtainOverlay.classList.add('opened');
+          setMode(true);
+        }, 950);
+      }
+
+      // Gentle Synthesized Celebratory Chime (Web Audio API)
+      function startAmbientChime() {
+        try {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContextClass) return;
+          if (!audioCtx) audioCtx = new AudioContextClass();
+          if (audioCtx.state === 'suspended') audioCtx.resume();
+          musicPlaying = true;
+          updateMusicIcon();
+
+          const notes = [523.25, 659.25, 783.99, 987.77, 1046.5, 783.99, 659.25];
+          let step = 0;
+
+          function playNote() {
+            if (!musicPlaying || !audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(notes[step % notes.length], audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.045, audioCtx.currentTime + 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.6);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 1.65);
+            step++;
+          }
+
+          playNote();
+          clearInterval(musicTimer);
+          musicTimer = setInterval(playNote, 950);
+        } catch (e) {}
+      }
+
+      function stopAmbientChime() {
+        musicPlaying = false;
+        clearInterval(musicTimer);
+        updateMusicIcon();
+      }
+
+      function updateMusicIcon() {
+        const icon = document.getElementById('musicIcon');
+        if (!icon) return;
+        icon.setAttribute('data-lucide', musicPlaying ? 'volume-2' : 'volume-x');
+        if (window.lucide) lucide.createIcons();
+      }
+
+      // Countdown Timer
+      function updateCountdown() {
+        const targetStr = (state.date || '2027-02-14') + 'T' + (state.time || '18:30') + ':00';
+        const target = new Date(targetStr).getTime();
+        const now = Date.now();
+        const diff = Math.max(0, target - now);
+
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const m = Math.floor((diff / (1000 * 60)) % 60);
+        const s = Math.floor((diff / 1000) % 60);
+
+        document.getElementById('cdDays').textContent = String(d).padStart(2, '0');
+        document.getElementById('cdHours').textContent = String(h).padStart(2, '0');
+        document.getElementById('cdMins').textContent = String(m).padStart(2, '0');
+        document.getElementById('cdSecs').textContent = String(s).padStart(2, '0');
+      }
+
+      // Scroll Reveal Observer
+      function triggerRevealSections() {
+        const sections = document.querySelectorAll('.reveal-section');
+        if (!('IntersectionObserver' in window)) {
+          sections.forEach((s) => s.classList.add('visible'));
+          return;
+        }
+        const obs = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+            }
+          });
+        }, { threshold: 0.12 });
+        sections.forEach((s) => obs.observe(s));
+      }
+
+      // Floating Golden Sparkles & Petals Canvas
+      function initParticles() {
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let width = (canvas.width = window.innerWidth);
+        let height = (canvas.height = window.innerHeight);
+
+        window.addEventListener('resize', () => {
+          width = canvas.width = window.innerWidth;
+          height = canvas.height = window.innerHeight;
+        });
+
+        const particles = Array.from({ length: 34 }, () => ({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          r: 1.5 + Math.random() * 3.5,
+          vx: (Math.random() - 0.5) * 0.45,
+          vy: 0.35 + Math.random() * 0.75,
+          alpha: 0.25 + Math.random() * 0.5,
+          isPetal: Math.random() > 0.55,
+          angle: Math.random() * Math.PI * 2
+        }));
+
+        function draw() {
+          ctx.clearRect(0, 0, width, height);
+          particles.forEach((p) => {
+            p.x += p.vx + Math.sin(p.angle) * 0.25;
+            p.y += p.vy;
+            p.angle += 0.015;
+            if (p.y > height + 10) {
+              p.y = -10;
+              p.x = Math.random() * width;
+            }
+            ctx.save();
+            ctx.globalAlpha = p.alpha;
+            if (p.isPetal) {
+              ctx.translate(p.x, p.y);
+              ctx.rotate(p.angle);
+              ctx.fillStyle = state.theme === 'theme-udaipur-rose' ? '#e88aa4' : '#e6c665';
+              ctx.beginPath();
+              ctx.ellipse(0, 0, p.r * 1.6, p.r * 0.85, 0, 0, Math.PI * 2);
+              ctx.fill();
+            } else {
+              ctx.fillStyle = '#f5d77f';
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, p.r * 0.7, 0, Math.PI * 2);
+              ctx.fill();
+            }
+            ctx.restore();
+          });
+          requestAnimationFrame(draw);
+        }
+        draw();
+      }
+
+      // Event Listeners
+      document.getElementById('themeSelectorGrid').addEventListener('click', (e) => {
+        const btn = e.target.closest('.theme-opt');
+        if (!btn) return;
+        state.theme = btn.dataset.theme;
+        saveLocal();
+        renderInvitation();
+      });
+
+      const fieldMap = {
+        partner1Input: 'partner1',
+        partner2Input: 'partner2',
+        hostLineInput: 'hostLine',
+        hashtagInput: 'hashtag',
+        dateInput: 'date',
+        timeInput: 'time',
+        cityInput: 'city',
+        venueNameInput: 'venueName',
+        dressCodeInput: 'dressCode',
+        messageInput: 'message'
+      };
+
+      Object.keys(fieldMap).forEach((id) => {
+        const el = document.getElementById(id);
+        el.addEventListener('input', () => {
+          state[fieldMap[id]] = el.value;
+          saveLocal();
+          renderInvitation();
+          updateCountdown();
+        });
+      });
+
+      eventsBuilderList.addEventListener('input', (e) => {
+        const idx = e.target.getAttribute('data-ev-idx');
+        const field = e.target.getAttribute('data-ev-field');
+        if (idx !== null && field && state.events[idx]) {
+          state.events[idx][field] = e.target.value;
+          saveLocal();
+          renderInvitation();
+        }
+      });
+
+      eventsBuilderList.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-remove-ev]');
+        if (!btn) return;
+        const idx = Number(btn.getAttribute('data-remove-ev'));
+        if (state.events.length <= 1) {
+          showToast('Keep at least one wedding event.');
+          return;
+        }
+        state.events.splice(idx, 1);
+        saveLocal();
+        renderEventsBuilder();
+        renderInvitation();
+      });
+
+      addEventBtn.addEventListener('click', () => {
+        state.events.push({
+          title: 'Celebration Event',
+          when: 'Date · Time',
+          place: 'Venue Hall',
+          note: 'Festive attire'
+        });
+        saveLocal();
+        renderEventsBuilder();
+        renderInvitation();
+      });
+
+      modeEditBtn.addEventListener('click', () => setMode(false));
+      modePreviewBtn.addEventListener('click', () => setMode(true));
+      document.getElementById('launchPreviewBtn').addEventListener('click', () => {
+        showCurtainEntrance();
+      });
+      replayEntranceBtn.addEventListener('click', () => {
+        showCurtainEntrance();
+      });
+
+      openSealBtn.addEventListener('click', openCurtain);
+      function downloadGuestHtml() {
+        const cloneDoc = document.documentElement.cloneNode(true);
+        const headerEl = cloneDoc.querySelector('header');
+        if (headerEl) headerEl.classList.add('hidden');
+        const editorEl = cloneDoc.querySelector('#editorView');
+        if (editorEl) editorEl.classList.add('hidden');
+        const inviteEl = cloneDoc.querySelector('#inviteView');
+        if (inviteEl) inviteEl.classList.remove('hidden');
+        const curtainEl = cloneDoc.querySelector('#curtainOverlay');
+        if (curtainEl) curtainEl.classList.remove('hidden', 'opening', 'opened');
+        let html = '<!DOCTYPE html>\n' + cloneDoc.outerHTML;
+        const stateScript = '<script>window.location.hash = ' + JSON.stringify(encodeStateToHash(state)) + ';<\/script>';
+        html = html.replace('<script>', stateScript + '\n  <script>');
+        const blob = new Blob([html], { type: 'text/html' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'index.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(a.href);
+        showToast('Downloaded guest-ready index.html!');
+      }
+
+      document.getElementById('downloadGuestHtmlBtn').addEventListener('click', downloadGuestHtml);
+      document.getElementById('topCopyLinkBtn').addEventListener('click', copyShareLink);
+      document.getElementById('copyLinkBtn').addEventListener('click', copyShareLink);
+      document.getElementById('previewCopyLinkBtn').addEventListener('click', copyShareLink);
+
+      musicToggleBtn.addEventListener('click', () => {
+        if (musicPlaying) stopAmbientChime();
+        else startAmbientChime();
+      });
+
+      document.getElementById('rsvpForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('rsvpName').value.trim();
+        const guests = document.getElementById('rsvpGuests').value;
+        const status = document.getElementById('rsvpStatus').value;
+        const wish = document.getElementById('rsvpWish').value.trim();
+        if (!name) return;
+
+        rsvps.unshift({ name, guests, status, wish });
+        try {
+          localStorage.setItem(RSVP_KEY, JSON.stringify(rsvps));
+        } catch (err) {}
+        e.target.reset();
+        renderRsvpWall();
+        showToast('Thank you! Your RSVP & blessings have been recorded.');
+        if (typeof confetti === 'function') {
+          confetti({ particleCount: 70, spread: 65, origin: { y: 0.7 } });
+        }
+      });
+
+      // Boot
+      loadInitialState();
+      populateFormFromState();
+      renderInvitation();
+      setMode(isPreviewMode);
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+      initParticles();
+    })();
+  </script>
+
+
+      <script>
+        (function() {
+          // The root element's background fills the whole page. As in CSS,
+          // the body's background is used when the root element has none.
+          function getPageBackgroundColor() {
+            var docStyle = window.getComputedStyle(document.documentElement);
+            var color = docStyle.backgroundColor;
+            if ((color === 'rgba(0, 0, 0, 0)' || color === 'transparent') &&
+                docStyle.backgroundImage === 'none' && document.body) {
+              color = window.getComputedStyle(document.body).backgroundColor;
+            }
+            return color || '';
+          }
+
+          var lastReportedColor = '';
+          function reportBackgroundColor() {
+            try {
+              var color = getPageBackgroundColor();
+              if (color === lastReportedColor) return;
+              lastReportedColor = color;
+              window.parent.postMessage({
+                type: 'ATARI_CODE_EMBED_BACKGROUND_COLOR',
+                backgroundColor: color
+              }, '*');
+            } catch (e) {}
+          }
+
+          // The page background usually changes through an attribute on html
+          // or body (for example a theme class), a style sheet in head, or the
+          // system color scheme.
+          if (typeof MutationObserver !== 'undefined') {
+            var observer = new MutationObserver(reportBackgroundColor);
+            observer.observe(document.documentElement, {attributes: true});
+            if (document.body) {
+              observer.observe(document.body, {attributes: true});
+            }
+            if (document.head) {
+              observer.observe(document.head, {
+                attributes: true,
+                childList: true,
+                subtree: true,
+                characterData: true
+              });
+            }
+          }
+          var colorSchemeQuery =
+              window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+          if (colorSchemeQuery && colorSchemeQuery.addEventListener) {
+            colorSchemeQuery.addEventListener('change', reportBackgroundColor);
+          }
+          window.addEventListener('load', reportBackgroundColor);
+          window.addEventListener('transitionend', reportBackgroundColor);
+          window.addEventListener('animationend', reportBackgroundColor);
+          reportBackgroundColor();
+        })();
+      </script>
+    </body></html>
